@@ -384,7 +384,7 @@
                         if (gamma < 0) {
                             this._marioMoveLeftPress(Math.max(gamma, -5));
                         } else if (gamma > 0) {
-                            this._marioMoveLeftPress(Math.min(gamma, 5));
+                            this._marioMoveRightPress(Math.min(gamma, 5));
                         }
                     }
                     window.addEventListener("deviceorientation", this._deviceorientationHandler);

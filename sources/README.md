@@ -10,6 +10,10 @@ Pixi plugins
 - https://github.com/kittykatattack/spriteUtilities
 - https://github.com/kittykatattack/tink
 
+Device Orientation
+
+- https://www.audero.it/demo/device-orientation-api-demo.html
+
 Keyboard
 
 - http://unixpapa.com/js/testkey.html
