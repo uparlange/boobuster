@@ -1,57 +1,73 @@
 (function (app) {
-    let spriteUtilities = null;
-    let bump = null;
-    let tink = null;
     let currentState = null;
     let states = {};
     let pixi = null;
-    let gameUtilities = null;
-    let scale = null;
-    app.getGameUtilitiesLib = function () {
-        return gameUtilities;
-    };
-    app.getSpriteUtilitiesLib = function () {
-        return spriteUtilities;
-    };
-    app.getBumpLib = function () {
-        return bump;
-    };
-    app.getTinkLib = function () {
-        return tink;
-    };
-    app.getSoundLib = function () {
-        return sounds;
-    }
-    app.loadScripts = function (scripts) {
-        return new Promise((resolve, reject) => {
-            let scriptLoadCount = 0;
-            scripts.forEach(element => {
-                const script = document.createElement("script");
-                script.onload = () => {
-                    scriptLoadCount++;
-                    if (scriptLoadCount === scripts.length) {
-                        resolve();
-                    }
-                };
-                script.onerror = () => {
-                    reject();
-                };
-                document.head.appendChild(script);
-                script.src = element;
-            });
+    const loadJavascripts = function (list) {
+        return new Promise(function (resolve, reject) {
+            if (Array.isArray(list) && list.length > 0) {
+                let scriptLoadCount = 0;
+                list.forEach(function (element) {
+                    const script = document.createElement("script");
+                    script.onload = function () {
+                        scriptLoadCount++;
+                        if (scriptLoadCount === list.length) {
+                            resolve();
+                        }
+                    };
+                    script.onerror = function () {
+                        reject();
+                    };
+                    document.head.appendChild(script);
+                    script.src = element;
+                });
+            } else {
+                setTimeout(function () {
+                    resolve();
+                }, 0);
+            }
         });
     };
-    app.define = function (params) {
-        app.loadScripts(["/vendors/pixi.min.js"]).then(() => {
+    const loadSounds = function (list) {
+        return new Promise(function (resolve) {
+            if (Array.isArray(list) && list.length > 0) {
+                sounds.load(list);
+                sounds.whenLoaded = function () {
+                    resolve();
+                }
+            } else {
+                setTimeout(function () {
+                    resolve();
+                }, 0);
+            }
+        });
+    };
+    const loadImages = function (list) {
+        return new Promise(function (resolve) {
+            if (Array.isArray(list) && list.length > 0) {
+                PIXI.loader.add(list).load(function () {
+                    resolve();
+                });
+            } else {
+                setTimeout(function () {
+                    resolve();
+                }, 0);
+            }
+        });
+    };
+    const enableDisableStateScene = function (scene, enabled) {
+        scene.children.forEach((child) => {
+            child.enabled = enabled;
+        });
+        scene.visible = enabled;
+    };
+    app.configure = function (configuration) {
+        loadJavascripts(["/vendors/pixi.min.js", "/vendors/sound.js"]).then(() => {
             let stateDescription = null;
-            // init application
-            pixi = new PIXI.Application(params.application);
+            pixi = new PIXI.Application(configuration.application);
             document.body.appendChild(pixi.view);
-            // init states
-            for (stateName in params.states) {
-                stateDescription = params.states[stateName];
+            for (stateName in configuration.states) {
+                stateDescription = configuration.states[stateName];
                 const scene = new PIXI.Container();
-                scene.visible = false;
                 stateDescription.state = {
                     name: stateName,
                     scene: scene
@@ -60,38 +76,38 @@
                 states[stateName] = stateDescription;
                 if (stateName === "loading") {
                     stateDescription.setup();
+                    enableDisableStateScene(stateDescription.state.scene, false);
                     app.setState("loading");
                 }
             }
-            app.loadScripts(["/vendors/bump.js", "/vendors/gameUtilities.js", "/vendors/scaleToWindow.js", "/vendors/sound.js", "/vendors/spriteUtilities.js", "/vendors/tink.js"]).then(() => {
-                // init libs
-                spriteUtilities = new SpriteUtilities(PIXI);
-                bump = new Bump(PIXI);
-                tink = new Tink(PIXI, pixi.view);
-                gameUtilities = new GameUtilities();
-                scale = scaleToWindow(pixi.view);
-                window.addEventListener("resize", function (event) {
-                    scale = scaleToWindow(pixi.view);
-                });
-                // init ticker
+            loadJavascripts(configuration.javascripts).then(() => {
+                if (configuration.handlers && configuration.handlers.onJavascriptsLoaded) {
+                    configuration.handlers.onJavascriptsLoaded(PIXI, pixi.view);
+                }
                 pixi.ticker.add((delta) => {
-                    tink.update();
+                    if (configuration.handlers && configuration.handlers.onTick) {
+                        configuration.handlers.onTick();
+                    }
                     currentState.tick(delta);
                 });
-                // load resources
-                sounds.load(params.sounds);
-                sounds.whenLoaded = () => {
-                    PIXI.loader.add(params.images).load(() => {
-                        for (stateName in params.states) {
+                loadSounds(configuration.sounds).then(() => {
+                    if (configuration.handlers && configuration.handlers.onSoundsLoaded) {
+                        configuration.handlers.onSoundsLoaded();
+                    }
+                    loadImages(configuration.images).then(() => {
+                        if (configuration.handlers && configuration.handlers.onImagesLoaded) {
+                            configuration.handlers.onImagesLoaded();
+                        }
+                        for (stateName in configuration.states) {
                             stateDescription = states[stateName];
                             if (stateName != "loading") {
                                 stateDescription.setup();
+                                enableDisableStateScene(stateDescription.state.scene, false);
                             }
                         }
-                        app.setState(params.defaultState);
-                        resolve();
+                        app.setState(configuration.defaultState);
                     });
-                }
+                });
             });
         });
     };
@@ -102,15 +118,16 @@
             if (currentState.beforeLeave) {
                 currentState.beforeLeave();
             }
-            currentState.state.scene.visible = false;
+            enableDisableStateScene(currentState.state.scene, false);
         }
         currentState = states[stateName];
+        console.debug("Display state : " + currentState.state.name);
         currentState.state.previousState = previousState;
         currentState.state.params = params;
         if (currentState.beforeEnter) {
             currentState.beforeEnter();
         }
-        currentState.state.scene.visible = true;
+        enableDisableStateScene(currentState.state.scene, true);
     };
 
 }(window.app || (window.app = {})));

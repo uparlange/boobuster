@@ -144,13 +144,22 @@
 	"sourceSize": {"w":249,"h":290},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"one_up.png":
+"mario_win.png":
 {
-	"frame": {"x":281,"y":1088,"w":32,"h":32},
+	"frame": {"x":0,"y":1378,"w":290,"h":290},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
-	"sourceSize": {"w":32,"h":32},
+	"spriteSourceSize": {"x":0,"y":0,"w":290,"h":290},
+	"sourceSize": {"w":290,"h":290},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"one_up.png":
+{
+	"frame": {"x":290,"y":1378,"w":24,"h":24},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":24,"h":24},
+	"sourceSize": {"w":24,"h":24},
 	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
@@ -158,8 +167,8 @@
 	"version": "1.0",
 	"image": "boobuster.png",
 	"format": "RGBA8888",
-	"size": {"w":512,"h":1378},
+	"size": {"w":512,"h":1668},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:a671813aebbc2b8fb6ff115f8125a0e9:ff7e0f2c717dd932e0ed28c9a7abfbd3:fb58f68921422c47e8fbf101a8f09db4$"
+	"smartupdate": "$TexturePacker:SmartUpdate:c70c523a0e98c88a06771320574cb441:871d0b7fa0c2f281d37772ab29e2f17f:fb58f68921422c47e8fbf101a8f09db4$"
 }
 }

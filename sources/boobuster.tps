@@ -288,6 +288,19 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">mario_win.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>73,73,145,145</rect>
+                <key>scale9Paddings</key>
+                <rect>73,73,145,145</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
         </map>
         <key>fileList</key>
         <array>
@@ -308,6 +321,7 @@
             <filename>luigi.png</filename>
             <filename>bg_home.png</filename>
             <filename>bg_play.png</filename>
+            <filename>mario_win.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
