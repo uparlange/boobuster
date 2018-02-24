@@ -98,14 +98,16 @@
                         if (configuration.handlers && configuration.handlers.onImagesLoaded) {
                             configuration.handlers.onImagesLoaded();
                         }
-                        for (stateName in configuration.states) {
-                            stateDescription = states[stateName];
-                            if (stateName != "loading") {
-                                stateDescription.setup();
-                                enableDisableStateScene(stateDescription.state.scene, false);
+                        setTimeout(() => {
+                            for (stateName in configuration.states) {
+                                stateDescription = states[stateName];
+                                if (stateName != "loading") {
+                                    stateDescription.setup();
+                                    enableDisableStateScene(stateDescription.state.scene, false);
+                                }
                             }
-                        }
-                        app.setState(configuration.defaultState);
+                            app.setState(configuration.defaultState);
+                        }, 1000);
                     });
                 });
             });

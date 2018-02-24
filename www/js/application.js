@@ -72,28 +72,6 @@
             this._sprite.vy = 0;
             this._lifeCount = 5;
             this._state = "normal";
-            const left = tink.keyboard(37);
-            left.press = () => {
-                this.changeDirection(new Set().add("left"));
-                this._sprite.vx = -5;
-                this._sprite.vy = 0;
-            };
-            left.release = () => {
-                if (!right.isDown && this._sprite.vy === 0) {
-                    this._sprite.vx = 0;
-                }
-            };
-            const right = tink.keyboard(39);
-            right.press = () => {
-                this.changeDirection(new Set().add("right"));
-                this._sprite.vx = 5;
-                this._sprite.vy = 0;
-            };
-            right.release = () => {
-                if (!left.isDown && this._sprite.vy === 0) {
-                    this._sprite.vx = 0;
-                }
-            };
         }
         hit() {
             if (this._state === "normal") {
@@ -334,13 +312,37 @@
                 _level: null,
                 _lives: [],
                 _music: null,
-                _addBullet: function () {
+                _marioShoot: function () {
                     const bullet = new Bullet();
                     bullet.getSprite().x = this._mario.getSprite().x + 5;
                     bullet.getSprite().y = this._mario.getSprite().y;
                     this._bullets.push(bullet);
                     this.state.scene.addChild(bullet.getSprite());
                     sounds["snd/fireball.wav"].play();
+                },
+                _marioMoveLeftPress: function () {
+                    this._mario.changeDirection(new Set().add("left"));
+                    const sprite = this._mario.getSprite();
+                    sprite.vx = -5;
+                    sprite.vy = 0;
+                },
+                _marioMoveLeftRelease: function (right) {
+                    const sprite = this._mario.getSprite();
+                    if (!right.isDown && sprite.vy === 0) {
+                        sprite.vx = 0;
+                    }
+                },
+                _marioMoveRightPress: function () {
+                    this._mario.changeDirection(new Set().add("right"));
+                    const sprite = this._mario.getSprite();
+                    sprite.vx = 5;
+                    sprite.vy = 0;
+                },
+                _marioMoveRightRelease: function (left) {
+                    const sprite = this._mario.getSprite();
+                    if (!left.isDown && sprite.vy === 0) {
+                        sprite.vx = 0;
+                    }
                 },
                 _removeBullet: function (bullet) {
                     this.state.scene.removeChild(bullet.getSprite());
@@ -384,6 +386,10 @@
                     this._music.loop = true;
                     // background
                     const background = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["bg_play.png"]);
+                    tink.makeInteractive(background);
+                    background.release = () => {
+                        this._marioShoot();
+                    };
                     this.state.scene.addChild(background);
                     // level
                     this._level = new PIXI.Text("", new PIXI.TextStyle({
@@ -405,7 +411,21 @@
                     // mario
                     const up = tink.keyboard(38);
                     up.release = () => {
-                        this._addBullet();
+                        this._marioShoot();
+                    };
+                    const left = tink.keyboard(37);
+                    left.press = () => {
+                        this._marioMoveLeftPress();
+                    };
+                    left.release = () => {
+                        this._marioMoveLeftRelease(right);
+                    };
+                    const right = tink.keyboard(39);
+                    right.press = () => {
+                        this._marioMoveRightPress();
+                    };
+                    right.release = () => {
+                        this._marioMoveRightRelease(left);
                     };
                 },
                 tick: function () {
@@ -496,14 +516,19 @@
 
                 },
                 beforeLeave: function () {
+                    // music
                     this._music.pause();
                 }
             },
             game_over: {
+                _music: null,
                 beforeEnter: function () {
-                    sounds["snd/mario_die.wav"].play();
+                    // music
+                    this._music.playFrom(0);
                 },
                 setup: function () {
+                    // music
+                    this._music = sounds["snd/mario_die.wav"];
                     // mario
                     const mario = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["mario_sad.png"]);
                     mario.x = (applicationWidth / 2) - (mario.width / 2);
@@ -526,7 +551,8 @@
 
                 },
                 beforeLeave: function () {
-
+                    // music
+                    this._music.pause();
                 }
             }
         }
