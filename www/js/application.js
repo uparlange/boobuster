@@ -379,7 +379,7 @@
                         life.getSprite().visible = true;
                     });
                     // device orientation
-                    this._deviceorientationHandler = function (event) {
+                    this._deviceorientationHandler = (event) => {
                         const gamma = Math.round(event.gamma);
                         this._level.text = gamma;
                         if (gamma < 0) {
