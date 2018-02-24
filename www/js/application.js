@@ -381,7 +381,6 @@
                     // device orientation
                     this._deviceorientationHandler = (event) => {
                         const gamma = Math.round(event.gamma);
-                        this._level.text = gamma;
                         if (gamma < 0) {
                             this._marioMoveLeftPress(Math.max(gamma, -5));
                         } else if (gamma > 0) {
