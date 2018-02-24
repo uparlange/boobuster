@@ -213,9 +213,31 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">boo_blue_king_left.png</key>
+            <key type="filename">boo_blue_king_right.png</key>
+            <key type="filename">boo_dark_left.png</key>
+            <key type="filename">boo_dark_right.png</key>
+            <key type="filename">boo_king_dark_left.png</key>
+            <key type="filename">boo_king_dark_right.png</key>
+            <key type="filename">boo_king_left.png</key>
+            <key type="filename">boo_king_right.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,16,32,32</rect>
+                <key>scale9Paddings</key>
+                <rect>16,16,32,32</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">boo_blue_left.png</key>
             <key type="filename">boo_blue_right.png</key>
             <key type="filename">boo_left.png</key>
+            <key type="filename">boo_pink_left.png</key>
+            <key type="filename">boo_pink_right.png</key>
             <key type="filename">boo_right.png</key>
             <key type="filename">boo_shy_left.png</key>
             <key type="filename">boo_shy_right.png</key>
@@ -230,22 +252,6 @@
                 <rect>8,8,16,16</rect>
                 <key>scale9Paddings</key>
                 <rect>8,8,16,16</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">boo_dark_left.png</key>
-            <key type="filename">boo_dark_right.png</key>
-            <key type="filename">boo_king_left.png</key>
-            <key type="filename">boo_king_right.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>16,16,32,32</rect>
-                <key>scale9Paddings</key>
-                <rect>16,16,32,32</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -322,6 +328,12 @@
             <filename>bg_home.png</filename>
             <filename>bg_play.png</filename>
             <filename>mario_win.png</filename>
+            <filename>boo_king_dark_left.png</filename>
+            <filename>boo_king_dark_right.png</filename>
+            <filename>boo_pink_right.png</filename>
+            <filename>boo_pink_left.png</filename>
+            <filename>boo_blue_king_left.png</filename>
+            <filename>boo_blue_king_right.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

@@ -156,7 +156,27 @@
         constructor() {
             const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
             super(vx > 0 ? "boo_blue_right.png" : "boo_blue_left.png");
-            this._sprite.x = gameUtilities.randomInt(0, 448);
+            this._sprite.x = gameUtilities.randomInt(0, 480);
+            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
+            this._sprite.vx = vx;
+            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+        }
+    }
+    class DarkBoo extends CircularSprite {
+        constructor() {
+            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            super(vx > 0 ? "boo_dark_right.png" : "boo_dark_left.png");
+            this._sprite.x = gameUtilities.randomInt(0, 480);
+            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
+            this._sprite.vx = vx;
+            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+        }
+    }
+    class PinkBoo extends CircularSprite {
+        constructor() {
+            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            super(vx > 0 ? "boo_pink_right.png" : "boo_pink_left.png");
+            this._sprite.x = gameUtilities.randomInt(0, 480);
             this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
             this._sprite.vx = vx;
             this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
@@ -166,7 +186,17 @@
         constructor() {
             const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
             super(vx > 0 ? "boo_king_right.png" : "boo_king_left.png");
-            this._sprite.x = gameUtilities.randomInt(0, 480);
+            this._sprite.x = gameUtilities.randomInt(0, 448);
+            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
+            this._sprite.vx = vx;
+            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+        }
+    }
+    class BlueKingBoo extends CircularSprite {
+        constructor() {
+            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            super(vx > 0 ? "boo_blue_king_right.png" : "boo_blue_king_left.png");
+            this._sprite.x = gameUtilities.randomInt(0, 448);
             this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
             this._sprite.vx = vx;
             this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
@@ -272,7 +302,10 @@
                     // boos
                     this._boos.push(new Boo());
                     this._boos.push(new BlueBoo());
+                    this._boos.push(new DarkBoo());
+                    this._boos.push(new PinkBoo());
                     this._boos.push(new KingBoo());
+                    this._boos.push(new BlueKingBoo());
                     this._boos.forEach((boo) => {
                         this.state.scene.addChild(boo.getSprite());
                     });
