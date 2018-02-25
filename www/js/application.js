@@ -79,7 +79,7 @@
                 if (this._lifeCount === 0) {
                     this._state = "dead";
                 } else {
-                    sounds["snd/mario_hit.wav"].play();
+                    app.getSound("snd/mario_hit.wav").play();
                     this._state = "hit";
                     setTimeout(() => {
                         this._state = "normal";
@@ -109,11 +109,11 @@
             if (this._state === "normal") {
                 this._hitCount++;
                 if (this._hitCount === 3) {
-                    sounds["snd/ghost_die.wav"].play();
+                    app.getSound("snd/ghost_die.wav").play();
                     this._state = "dead";
                     this._sprite.alpha = 0.3;
                 } else {
-                    sounds["snd/boo_hit.wav"].play();
+                    app.getSound("snd/boo_hit.wav").play();
                     this._state = "hidding";
                     this.setImage((this._image.indexOf("left") !== -1) ? "boo_shy_left.png" : "boo_shy_right.png");
                     setTimeout(() => {
@@ -252,8 +252,8 @@
                 },
                 setup: function () {
                     // music
-                    this._music = sounds["snd/mortuary.mp3"];
-                    this._music.loop = true;
+                    this._music = app.getSound("snd/mortuary.mp3");
+                    this._music.loop(true);
                     // background
                     const background = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["bg_home.png"]);
                     this.state.scene.addChild(background);
@@ -302,7 +302,7 @@
                 },
                 beforeLeave: function () {
                     // music
-                    this._music.pause();
+                    this._music.stop();
                 }
             },
             level: {
@@ -319,7 +319,7 @@
                     bullet.getSprite().y = this._mario.getSprite().y;
                     this._bullets.push(bullet);
                     this.state.scene.addChild(bullet.getSprite());
-                    sounds["snd/fireball.wav"].play();
+                    app.getSound("snd/fireball.wav").play();
                 },
                 beforeEnter: function () {
                     // music
@@ -368,8 +368,8 @@
                 },
                 setup: function () {
                     // music
-                    this._music = sounds["snd/beetlejuice.mp3"];
-                    this._music.loop = true;
+                    this._music = app.getSound("snd/beetlejuice.mp3");
+                    this._music.loop(true);
                     // background
                     const background = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["bg_play.png"]);
                     tink.makeInteractive(background);
@@ -466,7 +466,7 @@
                 },
                 beforeLeave: function () {
                     // music
-                    this._music.pause();
+                    this._music.stop();
                     // device orientation
                     window.removeEventListener("deviceorientation", this._deviceorientationHandler);
                 }
@@ -476,14 +476,14 @@
                 _music: null,
                 beforeEnter: function () {
                     // music
-                    this._music.playFrom(0);
+                    this._music.play();
                     // message
                     this._message.text = "Level " + this.state.params.level + " cleared !";
                     this._message.x = (applicationWidth / 2) - (this._message.width / 2);
                 },
                 setup: function () {
                     // music
-                    this._music = sounds["snd/level_finished.wav"];
+                    this._music = app.getSound("snd/level_finished.wav");
                     // mario
                     const mario = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["mario_win.png"]);
                     mario.x = (applicationWidth / 2) - (mario.width / 2);
@@ -506,18 +506,18 @@
                 },
                 beforeLeave: function () {
                     // music
-                    this._music.pause();
+                    this._music.stop();
                 }
             },
             game_over: {
                 _music: null,
                 beforeEnter: function () {
                     // music
-                    this._music.playFrom(0);
+                    this._music.play();
                 },
                 setup: function () {
                     // music
-                    this._music = sounds["snd/mario_die.wav"];
+                    this._music = app.getSound("snd/mario_die.wav");
                     // mario
                     const mario = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["mario_sad.png"]);
                     mario.x = (applicationWidth / 2) - (mario.width / 2);
@@ -541,7 +541,7 @@
                 },
                 beforeLeave: function () {
                     // music
-                    this._music.pause();
+                    this._music.stop();
                 }
             }
         }

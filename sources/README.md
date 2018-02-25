@@ -1,6 +1,7 @@
-Pixi
+Fwk
 
-- http://www.pixijs.com
+- Pixi : http://www.pixijs.com
+- Howler : https://howlerjs.com/
 
 Pixi plugins
 
@@ -22,11 +23,13 @@ Textures
 
 - https://www.codeandweb.com/texturepacker
 
-Sounds 
+Sounds (utils)
+
+- https://www.onlineconverter.com/
+
+Sounds (resources)
 
 - http://serenit.free.fr/sons/halloween.htm
 - http://themushroomkingdom.net/wav.shtml
 - http://www.lemondedemario.fr/bruitages/
 - http://www.mariomayhem.com/downloads/sounds/super_mario_bros_nes_sounds.php
-
-- https://www.onlineconverter.com/

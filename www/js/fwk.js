@@ -2,15 +2,16 @@
     let currentState = null;
     let states = {};
     let pixi = null;
+    const sounds = {};
     const loadJavascripts = function (list) {
         return new Promise(function (resolve, reject) {
             if (Array.isArray(list) && list.length > 0) {
-                let scriptLoadCount = 0;
+                let loadCount = 0;
                 list.forEach(function (element) {
                     const script = document.createElement("script");
                     script.onload = function () {
-                        scriptLoadCount++;
-                        if (scriptLoadCount === list.length) {
+                        loadCount++;
+                        if (loadCount === list.length) {
                             resolve();
                         }
                     };
@@ -30,10 +31,17 @@
     const loadSounds = function (list) {
         return new Promise(function (resolve) {
             if (Array.isArray(list) && list.length > 0) {
-                sounds.load(list);
-                sounds.whenLoaded = function () {
-                    resolve();
-                }
+                let loadCount = 0;
+                list.forEach(function (element) {
+                    const sound = new Howl({ src: [element] });
+                    sounds[element] = sound;
+                    sound.once("load", function () {
+                        loadCount++;
+                        if (loadCount === list.length) {
+                            resolve();
+                        }
+                    });
+                });
             } else {
                 setTimeout(function () {
                     resolve();
@@ -60,8 +68,11 @@
         });
         scene.visible = enabled;
     };
+    app.getSound = function (name) {
+        return sounds[name];
+    };
     app.configure = function (configuration) {
-        loadJavascripts(["/vendors/pixi.min.js", "/vendors/sound.js"]).then(() => {
+        loadJavascripts(["/vendors/pixi.min.js", "/vendors/howler.min.js"]).then(() => {
             let stateDescription = null;
             pixi = new PIXI.Application(configuration.application);
             document.body.appendChild(pixi.view);
