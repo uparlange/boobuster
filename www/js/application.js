@@ -321,32 +321,6 @@
                     this.state.scene.addChild(bullet.getSprite());
                     sounds["snd/fireball.wav"].play();
                 },
-                _marioMoveLeftPress: function (speed) {
-                    const sprite = this._mario.getSprite();
-                    sprite.vx = speed;
-                    sprite.vy = 0;
-                },
-                _marioMoveLeftRelease: function (right) {
-                    const sprite = this._mario.getSprite();
-                    if (!right.isDown && sprite.vy === 0) {
-                        sprite.vx = 0;
-                    }
-                },
-                _marioMoveRightPress: function (speed) {
-                    const sprite = this._mario.getSprite();
-                    sprite.vx = speed;
-                    sprite.vy = 0;
-                },
-                _marioMoveRightRelease: function (left) {
-                    const sprite = this._mario.getSprite();
-                    if (!left.isDown && sprite.vy === 0) {
-                        sprite.vx = 0;
-                    }
-                },
-                _removeBullet: function (bullet) {
-                    this.state.scene.removeChild(bullet.getSprite());
-                    this._bullets.splice(this._bullets.indexOf(bullet), 1);
-                },
                 beforeEnter: function () {
                     // music
                     this._music.play();
@@ -382,9 +356,11 @@
                     this._deviceorientationHandler = (event) => {
                         const gamma = Math.round(event.gamma);
                         if (gamma < 0) {
-                            this._marioMoveLeftPress(Math.max(gamma, -5));
+                            this._mario.getSprite().vx = Math.max(gamma, -5);
                         } else if (gamma > 0) {
-                            this._marioMoveRightPress(Math.min(gamma, 5));
+                            this._mario.getSprite().vx = Math.min(gamma, 5);
+                        } else {
+                            this._mario.getSprite().vx = 0;
                         }
                     }
                     window.addEventListener("deviceorientation", this._deviceorientationHandler);
@@ -424,17 +400,17 @@
                     };
                     const left = tink.keyboard(37);
                     left.press = () => {
-                        this._marioMoveLeftPress(-5);
+                        this._mario.getSprite().vx = -5;
                     };
                     left.release = () => {
-                        this._marioMoveLeftRelease(right);
+                        this._mario.getSprite().vx = 0;
                     };
                     const right = tink.keyboard(39);
                     right.press = () => {
-                        this._marioMoveRightPress(5);
+                        this._mario.getSprite().vx = 5;
                     };
                     right.release = () => {
-                        this._marioMoveRightRelease(left);
+                        this._mario.getSprite().vx = 0;
                     };
                 },
                 tick: function () {
@@ -444,7 +420,8 @@
                     this._bullets.forEach(bullet => {
                         bullet.move();
                         if (bump.contain(bullet.getSprite(), { x: 0, y: 0, width: applicationWidth, height: applicationHeight }) !== undefined) {
-                            this._removeBullet(bullet);
+                            this.state.scene.removeChild(bullet.getSprite());
+                            this._bullets.splice(this._bullets.indexOf(bullet), 1);
                         }
                     });
                     // boos
