@@ -203,7 +203,11 @@
             onJavascriptsLoaded: function (PIXI, view) {
                 loadingStep++;
                 scale = scaleToWindow(view);
-                window.addEventListener("resize", function (event) {
+                window.addEventListener("resize", () => {
+                    scale = scaleToWindow(view);
+                    tink.scale = scale;
+                });
+                window.addEventListener("orientationchange", () => {
                     scale = scaleToWindow(view);
                     tink.scale = scale;
                 });
