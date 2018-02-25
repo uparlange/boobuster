@@ -355,12 +355,13 @@
                     // device orientation
                     this._deviceorientationHandler = (event) => {
                         const gamma = Math.round(event.gamma);
+                        const sprite = this._mario.getSprite();
                         if (gamma < 0) {
-                            this._mario.getSprite().vx = Math.max(gamma, -5);
+                            sprite.vx = Math.max(gamma, -5);
                         } else if (gamma > 0) {
-                            this._mario.getSprite().vx = Math.min(gamma, 5);
+                            sprite.vx = Math.min(gamma, 5);
                         } else {
-                            this._mario.getSprite().vx = 0;
+                            sprite.vx = 0;
                         }
                     }
                     window.addEventListener("deviceorientation", this._deviceorientationHandler);
