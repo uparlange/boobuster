@@ -207,10 +207,6 @@
                     scale = scaleToWindow(view);
                     tink.scale = scale;
                 });
-                window.addEventListener("orientationchange", () => {
-                    scale = scaleToWindow(view);
-                    tink.scale = scale;
-                });
                 bump = new Bump(PIXI);
                 tink = new Tink(PIXI, view, scale);
                 gameUtilities = new GameUtilities();
