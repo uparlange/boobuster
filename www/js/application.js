@@ -8,69 +8,60 @@
     let loadingStep = 0;
     const loadingSteps = 3;
     class Sprite {
-        constructor(image) {
-            this._defaultImage = image;
-            this._image = image;
-            this._sprite = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures[this._image]);
+        constructor(images) {
+            this._defaultImages = images;
+            this._images = images;
+            this._sprite = new PIXI.Sprite(this._getTexture(this._defaultImages.default));
+            this._sprite.circular = true;
+            this._sprite.vx = 0;
+            this._sprite.vy = 0;
         }
         getSprite() {
             return this._sprite;
         }
-        setImage(image) {
-            this._image = image;
-            this._sprite.texture = PIXI.loader.resources["img/boobuster.json"].textures[this._image];
-        }
-        changeDirection(direction) {
-            if (direction.has("right")) {
-                this.setImage(this._image.replace("left", "right"));
-            } else if (direction.has("left")) {
-                this.setImage(this._image.replace("right", "left"));
-            }
-        }
-        inverseDirection(collision) {
-            if (collision.has("right")) {
-                this.setImage(this._image.replace("right", "left"));
-            } else if (collision.has("left")) {
-                this.setImage(this._image.replace("left", "right"));
-            }
-        }
         move(constraints) {
             this._sprite.x += this._sprite.vx;
             this._sprite.y += this._sprite.vy;
+            this._sprite.texture = this._getTexture(this._sprite.vx > 0 ? this._images.right : this._images.left);
             if (constraints) {
                 const collision = bump.contain(this._sprite, constraints, true);
                 if (collision) {
-                    this.inverseDirection(collision);
+                    if (collision.has("right")) {
+                        this._sprite.texture = this._getTexture(this._images.left);
+                    } else if (collision.has("left")) {
+                        this._sprite.texture = this._getTexture(this._images.right);
+                    }
                 }
             }
         }
-    }
-    class CircularSprite extends Sprite {
-        constructor(image) {
-            super(image);
-            this._sprite.circular = true;
+        _getTexture(image) {
+            if (!image) {
+                image = this._defaultImages.default;
+            }
+            return PIXI.loader.resources["img/boobuster.json"].textures[image];
         }
     }
-    class Bullet extends CircularSprite {
+    class Bullet extends Sprite {
         constructor() {
-            super("fireball.png");
-            this._sprite.vx = 0;
-            this._sprite.vy = -5;
+            super({ default: "fireball.png" });
         }
     }
-    class Life extends CircularSprite {
+    class Life extends Sprite {
         constructor() {
-            super("one_up.png");
+            super({ default: "one_up.png" });
         }
     }
-    class Mario extends CircularSprite {
+    class Mario extends Sprite {
         constructor() {
-            super("mario.png");
-            this._sprite.x = (applicationWidth / 2) - 16;
-            this._sprite.y = applicationHeight - 64;
-            this._sprite.vx = 0;
-            this._sprite.vy = 0;
+            super({ default: "mario.png" });
             this._lifeCount = 5;
+            this._state = "normal";
+        }
+        get lifeCount() {
+            return this._lifeCount;
+        }
+        set lifeCount(value) {
+            this._lifeCount = value;
             this._state = "normal";
         }
         hit() {
@@ -90,18 +81,10 @@
         isDead() {
             return this._state === "dead";
         }
-        getLifeCount() {
-            return this._lifeCount;
-        }
     }
-    class Boo extends CircularSprite {
-        constructor(image) {
-            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            super(vx > 0 ? "boo_right.png" : "boo_left.png");
-            this._sprite.x = gameUtilities.randomInt(0, 480);
-            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
-            this._sprite.vx = vx;
-            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+    class Boo extends Sprite {
+        constructor() {
+            super({ left: "boo_left.png", right: "boo_right.png" });
             this._hitCount = 0;
             this._state = "normal";
         }
@@ -115,10 +98,10 @@
                 } else {
                     app.getSound("snd/boo_hit.wav").play();
                     this._state = "hidding";
-                    this.setImage((this._image.indexOf("left") !== -1) ? "boo_shy_left.png" : "boo_shy_right.png");
+                    this._images = { left: "boo_shy_left.png", right: "boo_shy_right.png" };
                     setTimeout(() => {
                         this._state = "normal";
-                        this.setImage((this._image.indexOf("left") !== -1) ? this._defaultImage.replace("right", "left") : this._defaultImage);
+                        this._images = this._defaultImages;
                     }, 3000);
                 }
             }
@@ -126,58 +109,33 @@
         isDead() {
             return this._state === "dead";
         }
-        isHidding() {
+        isProtecting() {
             return this._state === "hidding";
         }
     }
-    class BlueBoo extends CircularSprite {
+    class BlueBoo extends Sprite {
         constructor() {
-            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            super(vx > 0 ? "boo_blue_right.png" : "boo_blue_left.png");
-            this._sprite.x = gameUtilities.randomInt(0, 480);
-            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
-            this._sprite.vx = vx;
-            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            super({ left: "boo_blue_left.png", right: "boo_blue_right.png" });
         }
     }
-    class DarkBoo extends CircularSprite {
+    class DarkBoo extends Sprite {
         constructor() {
-            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            super(vx > 0 ? "boo_dark_right.png" : "boo_dark_left.png");
-            this._sprite.x = gameUtilities.randomInt(0, 480);
-            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
-            this._sprite.vx = vx;
-            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            super({ left: "boo_dark_left.png", right: "boo_dark_right.png" });
         }
     }
-    class PinkBoo extends CircularSprite {
+    class PinkBoo extends Sprite {
         constructor() {
-            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            super(vx > 0 ? "boo_pink_right.png" : "boo_pink_left.png");
-            this._sprite.x = gameUtilities.randomInt(0, 480);
-            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
-            this._sprite.vx = vx;
-            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            super({ left: "boo_pink_left.png", right: "boo_pink_right.png" });
         }
     }
-    class KingBoo extends CircularSprite {
+    class KingBoo extends Sprite {
         constructor() {
-            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            super(vx > 0 ? "boo_king_right.png" : "boo_king_left.png");
-            this._sprite.x = gameUtilities.randomInt(0, 448);
-            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
-            this._sprite.vx = vx;
-            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            super({ left: "boo_king_left.png", right: "boo_king_right.png" });
         }
     }
-    class BlueKingBoo extends CircularSprite {
+    class BlueKingBoo extends Sprite {
         constructor() {
-            const vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            super(vx > 0 ? "boo_blue_king_right.png" : "boo_blue_king_left.png");
-            this._sprite.x = gameUtilities.randomInt(0, 448);
-            this._sprite.y = gameUtilities.randomInt(0, applicationHeight - 200);
-            this._sprite.vx = vx;
-            this._sprite.vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            super({ left: "boo_blue_king_left.png", right: "boo_blue_king_right.png" });
         }
     }
     app.configure({
@@ -192,7 +150,7 @@
             "img/boobuster.json"
         ],
         sounds: [
-            "snd/beetlejuice.mp3", "snd/boo_hit.wav", "snd/fireball.wav", "snd/ghost_die.wav", "snd/level_finished.wav",
+            "snd/beetlejuice.mp3", "snd/boo_hit.wav", "snd/fireball.wav", "snd/ghost_die.wav", "snd/level_cleared.wav",
             "snd/mario_die.wav", "snd/mario_hit.wav", "snd/mortuary.mp3"
         ],
         javascripts: [
@@ -200,6 +158,9 @@
         ],
         defaultState: "home",
         handlers: {
+            onBeforeLoad: function (PIXI) {
+
+            },
             onJavascriptsLoaded: function (PIXI, view) {
                 loadingStep++;
                 scale = scaleToWindow(view);
@@ -228,6 +189,7 @@
 
                 },
                 setup: function () {
+                    // message
                     this._message = new PIXI.Text("", new PIXI.TextStyle({
                         fontSize: 40,
                         fill: "white"
@@ -274,7 +236,7 @@
                     play.y = 395;
                     tink.makeInteractive(play);
                     play.release = () => {
-                        app.setState("level", { level: 1 });
+                        app.moveTo("level", { level: 1 });
                     }
                     this.state.scene.addChild(play);
                     // boos
@@ -285,12 +247,16 @@
                     this._boos.push(new KingBoo());
                     this._boos.push(new BlueKingBoo());
                     this._boos.forEach((boo) => {
+                        boo.getSprite().x = gameUtilities.randomInt(0, applicationWidth - boo.getSprite().height);
+                        boo.getSprite().y = gameUtilities.randomInt(0, applicationHeight - 200);
+                        boo.getSprite().vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+                        boo.getSprite().vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
                         this.state.scene.addChild(boo.getSprite());
                     });
                     // shortcuts
                     const h = tink.keyboard(72);
                     h.release = () => {
-                        app.setState("home");
+                        app.moveTo("home");
                     };
                 },
                 tick: function () {
@@ -306,6 +272,7 @@
                 }
             },
             level: {
+                _defaultMarioLifeCount: 5,
                 _mario: null,
                 _boos: [],
                 _bullets: [],
@@ -313,13 +280,19 @@
                 _lives: [],
                 _music: null,
                 _deviceorientationHandler: null,
-                _marioShoot: function () {
+                _addBullet: function () {
                     const bullet = new Bullet();
                     bullet.getSprite().x = this._mario.getSprite().x + 5;
                     bullet.getSprite().y = this._mario.getSprite().y;
+                    bullet.getSprite().vx = 0;
+                    bullet.getSprite().vy = -5;
                     this._bullets.push(bullet);
                     this.state.scene.addChild(bullet.getSprite());
                     app.getSound("snd/fireball.wav").play();
+                },
+                _removeBullet: function (bullet) {
+                    this.state.scene.removeChild(bullet.getSprite());
+                    this._bullets.splice(this._bullets.indexOf(bullet), 1);
                 },
                 beforeEnter: function () {
                     // music
@@ -334,6 +307,10 @@
                     const booCount = this.state.params.level * 5;
                     for (let index = 0; index < booCount; index++) {
                         const boo = new Boo();
+                        boo.getSprite().x = gameUtilities.randomInt(0, applicationWidth - boo.getSprite().height);
+                        boo.getSprite().y = gameUtilities.randomInt(0, applicationHeight - 200);
+                        boo.getSprite().vx = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+                        boo.getSprite().vy = gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
                         this._boos.push(boo);
                         this.state.scene.addChild(boo.getSprite());
                     }
@@ -344,10 +321,9 @@
                     this._bullets = [];
                     // mario
                     if (this._mario) {
-                        this.state.scene.removeChild(this._mario.getSprite());
+                        this._mario.lifeCount = this._defaultMarioLifeCount;
+                        this._mario.getSprite().x = (applicationWidth / 2) - (this._mario.getSprite().width / 2);
                     }
-                    this._mario = new Mario();
-                    this.state.scene.addChild(this._mario.getSprite());
                     // lives
                     this._lives.forEach(life => {
                         life.getSprite().visible = true;
@@ -374,7 +350,7 @@
                     const background = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["bg_play.png"]);
                     tink.makeInteractive(background);
                     background.release = () => {
-                        this._marioShoot();
+                        this._addBullet();
                     };
                     this.state.scene.addChild(background);
                     // level
@@ -386,8 +362,7 @@
                     this._level.y = 10;
                     this.state.scene.addChild(this._level);
                     // lives
-                    const liveCount = new Mario().getLifeCount();
-                    for (let index = 1; index <= liveCount; index++) {
+                    for (let index = 1; index <= this._defaultMarioLifeCount; index++) {
                         const life = new Life();
                         life.getSprite().x = applicationWidth - index * 34;
                         life.getSprite().y = 10;
@@ -395,9 +370,13 @@
                         this.state.scene.addChild(life.getSprite());
                     }
                     // mario
+                    this._mario = new Mario();
+                    this._mario.getSprite().x = (applicationWidth / 2) - (this._mario.getSprite().width / 2);
+                    this._mario.getSprite().y = applicationHeight - this._mario.getSprite().height;
+                    this.state.scene.addChild(this._mario.getSprite());
                     const up = tink.keyboard(38);
                     up.release = () => {
-                        this._marioShoot();
+                        this._addBullet();
                     };
                     const left = tink.keyboard(37);
                     left.press = () => {
@@ -421,8 +400,7 @@
                     this._bullets.forEach(bullet => {
                         bullet.move();
                         if (bump.contain(bullet.getSprite(), { x: 0, y: 0, width: applicationWidth, height: applicationHeight }) !== undefined) {
-                            this.state.scene.removeChild(bullet.getSprite());
-                            this._bullets.splice(this._bullets.indexOf(bullet), 1);
+                            this._removeBullet(bullet);
                         }
                     });
                     // boos
@@ -444,14 +422,15 @@
                             this._bullets.forEach(bullet => {
                                 if (bump.hitTestCircle(currentBoo.getSprite(), bullet.getSprite())) {
                                     bump.movingCircleCollision(currentBoo.getSprite(), bullet.getSprite());
+                                    this._removeBullet(bullet);
                                     currentBoo.hit();
                                 }
                             });
                             // boo against mario
-                            if (!currentBoo.isHidding()) {
+                            if (!currentBoo.isProtecting()) {
                                 if (bump.hitTestCircle(currentBoo.getSprite(), this._mario.getSprite())) {
                                     this._mario.hit();
-                                    this._lives[this._mario.getLifeCount()].getSprite().visible = false;
+                                    this._lives[this._mario.lifeCount].getSprite().visible = false;
                                 }
                             }
                         }
@@ -459,9 +438,9 @@
                     // check end
                     const leavingBoos = this._boos.filter(boo => !boo.isDead());
                     if (leavingBoos.length === 0) {
-                        app.setState("level_finished", { level: this.state.params.level });
+                        app.moveTo("level_cleared", { level: this.state.params.level });
                     } else if (this._mario.isDead()) {
-                        app.setState("game_over");
+                        app.moveTo("game_over");
                     }
                 },
                 beforeLeave: function () {
@@ -471,7 +450,7 @@
                     window.removeEventListener("deviceorientation", this._deviceorientationHandler);
                 }
             },
-            level_finished: {
+            level_cleared: {
                 _message: null,
                 _music: null,
                 beforeEnter: function () {
@@ -483,14 +462,14 @@
                 },
                 setup: function () {
                     // music
-                    this._music = app.getSound("snd/level_finished.wav");
+                    this._music = app.getSound("snd/level_cleared.wav");
                     // mario
                     const mario = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["mario_win.png"]);
                     mario.x = (applicationWidth / 2) - (mario.width / 2);
                     mario.y = 60;
                     tink.makeInteractive(mario);
                     mario.release = () => {
-                        app.setState("level", { level: this.state.params.level + 1 });
+                        app.moveTo("level", { level: this.state.params.level + 1 });
                     }
                     this.state.scene.addChild(mario);
                     // message
@@ -524,7 +503,7 @@
                     mario.y = 60;
                     tink.makeInteractive(mario);
                     mario.release = () => {
-                        app.setState("home");
+                        app.moveTo("home");
                     }
                     this.state.scene.addChild(mario);
                     // message

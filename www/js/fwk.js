@@ -88,8 +88,11 @@
                 if (stateName === "loading") {
                     stateDescription.setup();
                     enableDisableStateScene(stateDescription.state.scene, false);
-                    app.setState("loading");
+                    app.moveTo("loading");
                 }
+            }
+            if (configuration.handlers && configuration.handlers.onBeforeLoad) {
+                configuration.handlers.onBeforeLoad(PIXI);
             }
             loadJavascripts(configuration.javascripts).then(() => {
                 if (configuration.handlers && configuration.handlers.onJavascriptsLoaded) {
@@ -117,14 +120,14 @@
                                     enableDisableStateScene(stateDescription.state.scene, false);
                                 }
                             }
-                            app.setState(configuration.defaultState);
+                            app.moveTo(configuration.defaultState);
                         }, 1000);
                     });
                 });
             });
         });
     };
-    app.setState = function (stateName, params) {
+    app.moveTo = function (stateName, params) {
         let previousState = null;
         if (currentState) {
             previousState = currentState.state.name;
@@ -142,5 +145,4 @@
         }
         enableDisableStateScene(currentState.state.scene, true);
     };
-
 }(window.app || (window.app = {})));
