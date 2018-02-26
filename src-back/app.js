@@ -1,5 +1,4 @@
-//const PROD_MODE = process.env.NODE_ENV === "production";
-const PROD_MODE = true;
+const PROD_MODE = process.env.NODE_ENV === "production";
 const PORT = process.env.PORT || 3000;
 
 const express = require("express");
