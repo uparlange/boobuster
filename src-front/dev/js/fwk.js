@@ -3,6 +3,7 @@
     let states = {};
     let pixi = null;
     const sounds = {};
+    const logAppender = console;
     const loadJavascripts = function (list) {
         return new Promise(function (resolve, reject) {
             if (Array.isArray(list) && list.length > 0) {
@@ -72,11 +73,11 @@
         return sounds[name];
     };
     app.configure = function (configuration) {
-        loadJavascripts(["/vendors/pixi.min.js", "/vendors/howler.min.js"]).then(() => {
+        loadJavascripts(["/js/vendors/pixi.min.js", "/js/vendors/howler.min.js"]).then(() => {
             let stateDescription = null;
             pixi = new PIXI.Application(configuration.application);
             document.body.appendChild(pixi.view);
-            for (stateName in configuration.states) {
+            for (let stateName in configuration.states) {
                 stateDescription = configuration.states[stateName];
                 const scene = new PIXI.Container();
                 stateDescription.state = {
@@ -113,7 +114,7 @@
                             configuration.handlers.onImagesLoaded();
                         }
                         setTimeout(() => {
-                            for (stateName in configuration.states) {
+                            for (let stateName in configuration.states) {
                                 stateDescription = states[stateName];
                                 if (stateName != "loading") {
                                     stateDescription.setup();
@@ -137,7 +138,7 @@
             enableDisableStateScene(currentState.state.scene, false);
         }
         currentState = states[stateName];
-        console.debug("Display state : " + currentState.state.name);
+        logAppender.debug("Display state : " + currentState.state.name);
         currentState.state.previousState = previousState;
         currentState.state.params = params;
         if (currentState.beforeEnter) {

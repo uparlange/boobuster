@@ -7,7 +7,6 @@ Pixi plugins
 
 - https://github.com/kittykatattack/bump
 - https://github.com/kittykatattack/gameUtilities
-- https://github.com/kittykatattack/sound.js
 - https://github.com/kittykatattack/spriteUtilities
 - https://github.com/kittykatattack/tink
 

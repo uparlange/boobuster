@@ -1,0 +1,17 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": [
+        "eslint:recommended"
+    ],
+    "globals": {
+        "PIXI": true,
+        "scaleToWindow": true,
+        "Bump": true,
+        "Tink": true,
+        "GameUtilities": true,
+        "Howl": true
+    }
+}

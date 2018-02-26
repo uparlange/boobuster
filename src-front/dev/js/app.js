@@ -38,7 +38,7 @@
             if (!image) {
                 image = this._defaultImages.default;
             }
-            return PIXI.loader.resources["img/boobuster.json"].textures[image];
+            return PIXI.loader.resources["/img/boobuster.json"].textures[image];
         }
     }
     class Bullet extends Sprite {
@@ -70,7 +70,7 @@
                 if (this._lifeCount === 0) {
                     this._state = "dead";
                 } else {
-                    app.getSound("snd/mario_hit.wav").play();
+                    app.getSound("/snd/mario_hit.wav").play();
                     this._state = "hit";
                     setTimeout(() => {
                         this._state = "normal";
@@ -92,11 +92,11 @@
             if (this._state === "normal") {
                 this._hitCount++;
                 if (this._hitCount === 3) {
-                    app.getSound("snd/ghost_die.wav").play();
+                    app.getSound("/snd/ghost_die.wav").play();
                     this._state = "dead";
                     this._sprite.alpha = 0.3;
                 } else {
-                    app.getSound("snd/boo_hit.wav").play();
+                    app.getSound("/snd/boo_hit.wav").play();
                     this._state = "hidding";
                     this._images = { left: "boo_shy_left.png", right: "boo_shy_right.png" };
                     setTimeout(() => {
@@ -147,18 +147,18 @@
             resolution: 1
         },
         images: [
-            "img/boobuster.json"
+            "/img/boobuster.json"
         ],
         sounds: [
-            "snd/beetlejuice.mp3", "snd/boo_hit.wav", "snd/fireball.wav", "snd/ghost_die.wav", "snd/level_cleared.wav",
-            "snd/mario_die.wav", "snd/mario_hit.wav", "snd/mortuary.mp3"
+            "/snd/beetlejuice.mp3", "/snd/boo_hit.wav", "/snd/fireball.wav", "/snd/ghost_die.wav", "/snd/level_cleared.wav",
+            "/snd/mario_die.wav", "/snd/mario_hit.wav", "/snd/mortuary.mp3"
         ],
         javascripts: [
-            "/vendors/bump.js", "/vendors/gameUtilities.js", "/vendors/scaleToWindow.js", "/vendors/tink.js"
+            "/js/vendors/bump.js", "/js/vendors/gameUtilities.js", "/js/vendors/scaleToWindow.js", "/js/vendors/tink.js"
         ],
         defaultState: "home",
         handlers: {
-            onBeforeLoad: function (PIXI) {
+            onBeforeLoad: function () {
 
             },
             onJavascriptsLoaded: function (PIXI, view) {
@@ -214,10 +214,10 @@
                 },
                 setup: function () {
                     // music
-                    this._music = app.getSound("snd/mortuary.mp3");
+                    this._music = app.getSound("/snd/mortuary.mp3");
                     this._music.loop(true);
                     // background
-                    const background = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["bg_home.png"]);
+                    const background = new PIXI.Sprite(PIXI.loader.resources["/img/boobuster.json"].textures["bg_home.png"]);
                     this.state.scene.addChild(background);
                     // title
                     const title = new PIXI.Text("Boobuster", new PIXI.TextStyle({
@@ -288,7 +288,7 @@
                     bullet.getSprite().vy = -5;
                     this._bullets.push(bullet);
                     this.state.scene.addChild(bullet.getSprite());
-                    app.getSound("snd/fireball.wav").play();
+                    app.getSound("/snd/fireball.wav").play();
                 },
                 _removeBullet: function (bullet) {
                     this.state.scene.removeChild(bullet.getSprite());
@@ -344,10 +344,10 @@
                 },
                 setup: function () {
                     // music
-                    this._music = app.getSound("snd/beetlejuice.mp3");
+                    this._music = app.getSound("/snd/beetlejuice.mp3");
                     this._music.loop(true);
                     // background
-                    const background = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["bg_play.png"]);
+                    const background = new PIXI.Sprite(PIXI.loader.resources["/img/boobuster.json"].textures["bg_play.png"]);
                     tink.makeInteractive(background);
                     background.release = () => {
                         this._addBullet();
@@ -462,9 +462,9 @@
                 },
                 setup: function () {
                     // music
-                    this._music = app.getSound("snd/level_cleared.wav");
+                    this._music = app.getSound("/snd/level_cleared.wav");
                     // mario
-                    const mario = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["mario_win.png"]);
+                    const mario = new PIXI.Sprite(PIXI.loader.resources["/img/boobuster.json"].textures["mario_win.png"]);
                     mario.x = (applicationWidth / 2) - (mario.width / 2);
                     mario.y = 60;
                     tink.makeInteractive(mario);
@@ -496,9 +496,9 @@
                 },
                 setup: function () {
                     // music
-                    this._music = app.getSound("snd/mario_die.wav");
+                    this._music = app.getSound("/snd/mario_die.wav");
                     // mario
-                    const mario = new PIXI.Sprite(PIXI.loader.resources["img/boobuster.json"].textures["mario_sad.png"]);
+                    const mario = new PIXI.Sprite(PIXI.loader.resources["/img/boobuster.json"].textures["mario_sad.png"]);
                     mario.x = (applicationWidth / 2) - (mario.width / 2);
                     mario.y = 60;
                     tink.makeInteractive(mario);
