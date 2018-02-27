@@ -45,11 +45,11 @@ https://boobuster.herokuapp.com
 
 ### Sounds
 
-### Utils
+#### Utils
 
 - https://www.onlineconverter.com/
 
-#### Reources
+#### Resources
 
 - http://serenit.free.fr/sons/halloween.htm
 - http://themushroomkingdom.net/wav.shtml
