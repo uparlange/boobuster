@@ -2,8 +2,20 @@
     let currentState = null;
     let states = {};
     let pixi = null;
+    let configuration = null;
+    let resourcesCount = 0;
     const sounds = {};
     const logAppender = console;
+    const fwkJs = ["/js/vendors/pixi.min.js", "/js/vendors/howler.min.js"];
+    const setConfiguration = function (config) {
+        configuration = config;
+        resourcesCount = fwkJs.length + configuration.resources.images.length + configuration.resources.sounds.length + configuration.resources.javascripts.length;
+    };
+    const callResourcesLoadedHandler = function (count) {
+        if (configuration.handlers.onResourcesLoaded) {
+            configuration.handlers.onResourcesLoaded({ total: resourcesCount, count: count });
+        }
+    };
     const loadJavascripts = function (list) {
         return new Promise(function (resolve, reject) {
             if (Array.isArray(list) && list.length > 0) {
@@ -12,6 +24,7 @@
                     const script = document.createElement("script");
                     script.onload = function () {
                         loadCount++;
+                        callResourcesLoadedHandler(1);
                         if (loadCount === list.length) {
                             resolve();
                         }
@@ -38,6 +51,7 @@
                     sounds[element] = sound;
                     sound.once("load", function () {
                         loadCount++;
+                        callResourcesLoadedHandler(1);
                         if (loadCount === list.length) {
                             resolve();
                         }
@@ -54,6 +68,7 @@
         return new Promise(function (resolve) {
             if (Array.isArray(list) && list.length > 0) {
                 PIXI.loader.add(list).load(function () {
+                    callResourcesLoadedHandler(list.length);
                     resolve();
                 });
             } else {
@@ -72,8 +87,9 @@
     app.getSound = function (name) {
         return sounds[name];
     };
-    app.configure = function (configuration) {
-        loadJavascripts(["/js/vendors/pixi.min.js", "/js/vendors/howler.min.js"]).then(() => {
+    app.configure = function (config) {
+        setConfiguration(config);
+        loadJavascripts(fwkJs).then(() => {
             let stateDescription = null;
             pixi = new PIXI.Application(configuration.application);
             document.body.appendChild(pixi.view);
@@ -92,10 +108,7 @@
                     app.moveTo("loading");
                 }
             }
-            if (configuration.handlers && configuration.handlers.onBeforeLoad) {
-                configuration.handlers.onBeforeLoad(PIXI);
-            }
-            loadJavascripts(configuration.javascripts).then(() => {
+            loadJavascripts(configuration.resources.javascripts).then(() => {
                 if (configuration.handlers && configuration.handlers.onJavascriptsLoaded) {
                     configuration.handlers.onJavascriptsLoaded(PIXI, pixi.view);
                 }
@@ -105,11 +118,11 @@
                     }
                     currentState.tick(delta);
                 });
-                loadSounds(configuration.sounds).then(() => {
+                loadSounds(configuration.resources.sounds).then(() => {
                     if (configuration.handlers && configuration.handlers.onSoundsLoaded) {
                         configuration.handlers.onSoundsLoaded();
                     }
-                    loadImages(configuration.images).then(() => {
+                    loadImages(configuration.resources.images).then(() => {
                         if (configuration.handlers && configuration.handlers.onImagesLoaded) {
                             configuration.handlers.onImagesLoaded();
                         }

@@ -1,12 +1,22 @@
 (function (app) {
     const applicationWidth = 512;
     const applicationHeight = 512;
+    const images = [
+        "/img/boobuster.json"
+    ];
+    const sounds = [
+        "/snd/beetlejuice.mp3", "/snd/boo_hit.mp3", "/snd/fireball.mp3", "/snd/ghost_die.mp3", "/snd/level_cleared.mp3",
+        "/snd/mario_die.mp3", "/snd/mario_hit.mp3", "/snd/mortuary.mp3"
+    ];
+    const javascripts = [
+        "/js/vendors/bump.js", "/js/vendors/gameUtilities.js", "/js/vendors/scaleToWindow.js", "/js/vendors/tink.js"
+    ];
     let bump = null;
     let tink = null;
     let gameUtilities = null;
     let scale = null;
+    let loadingSteps = 0;
     let loadingStep = 0;
-    const loadingSteps = 3;
     class Sprite {
         constructor(images) {
             this._defaultImages = images;
@@ -146,23 +156,18 @@
             transparent: false,
             resolution: 1
         },
-        images: [
-            "/img/boobuster.json"
-        ],
-        sounds: [
-            "/snd/beetlejuice.mp3", "/snd/boo_hit.mp3", "/snd/fireball.mp3", "/snd/ghost_die.mp3", "/snd/level_cleared.mp3",
-            "/snd/mario_die.mp3", "/snd/mario_hit.mp3", "/snd/mortuary.mp3"
-        ],
-        javascripts: [
-            "/js/vendors/bump.js", "/js/vendors/gameUtilities.js", "/js/vendors/scaleToWindow.js", "/js/vendors/tink.js"
-        ],
+        resources: {
+            images: images,
+            sounds: sounds,
+            javascripts: javascripts
+        },
         defaultState: "home",
         handlers: {
-            onBeforeLoad: function () {
-
+            onResourcesLoaded: function (event) {
+                loadingSteps = event.total;
+                loadingStep += event.count;
             },
             onJavascriptsLoaded: function (PIXI, view) {
-                loadingStep++;
                 scale = scaleToWindow(view);
                 window.addEventListener("resize", () => {
                     scale = scaleToWindow(view);
@@ -173,10 +178,10 @@
                 gameUtilities = new GameUtilities();
             },
             onSoundsLoaded: function () {
-                loadingStep++;
+
             },
             onImagesLoaded: function () {
-                loadingStep++;
+
             },
             onTick: function () {
                 tink.update();
