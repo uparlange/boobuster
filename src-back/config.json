@@ -1,0 +1,20 @@
+{
+    "expressPort": "3000",
+    "expressStaticsVendorsConf": {
+        "path": "/js/vendors",
+        "vendors": [
+            {
+                "folder": "node_modules/pixi.js/dist",
+                "files": [
+                    "pixi.min.js"
+                ]
+            },
+            {
+                "folder": "node_modules/howler/dist",
+                "files": [
+                    "howler.min.js"
+                ]
+            }
+        ]
+    }
+}

@@ -5,13 +5,18 @@ const imagemin = require('gulp-imagemin');
 const htmlclean = require('gulp-htmlclean');
 const eslint = require('gulp-eslint');
 const uglify = require('gulp-uglify-es').default;
+const fs = require('fs');
+const swPrecache = require('sw-precache');
 
-gulp.task('clean', () => {
-    return del(['src-front/prod']);
+const pkg = require('./package.json');
+const config = require('./src-back/config.json');
+
+gulp.task('prepare', () => {
+    return del(['src-front/prod', 'src-front/dev/service-worker.js']);
 });
 
 gulp.task('analyze-js', () => {
-    return gulp.src(['src-front/dev/js/*.js']).pipe(eslint()).pipe(eslint.format()).pipe(eslint.failAfterError());
+    return gulp.src(['src-front/dev/js/*.js', 'src-front/dev/js/states/*.js']).pipe(eslint()).pipe(eslint.format()).pipe(eslint.failAfterError());
 });
 
 gulp.task('uglify-js', () => {
@@ -34,8 +39,69 @@ gulp.task('copy-html', () => {
     return gulp.src('src-front/dev/index.html').pipe(htmlclean()).pipe(gulp.dest('src-front/prod'));
 });
 
+gulp.task('manifest.cache', (callback) => {
+    let count = 0;
+    const baseDir = 'src-front/prod';
+    const path = baseDir + '/manifest.cache';
+    const readDir = (dir) => {
+        fs.readdirSync(dir).forEach((item, index, array) => {
+            const path = dir + '/' + item;
+            const stats = fs.statSync(path);
+            if (stats.isDirectory()) {
+                readDir(path);
+            }
+            else {
+                content += path.replace(baseDir, '') + '\n';
+                count++;
+            }
+        });
+    };
+    let content = '';
+    content = 'CACHE MANIFEST\n';
+    content += '# ' + pkg.version + '\n';
+    content += 'CACHE:\n';
+    readDir(baseDir);
+    const vendorsConf = config.expressStaticsVendorsConf;
+    vendorsConf.vendors.forEach((vendor, index, array) => {
+        vendor.files.forEach((file, index, array) => {
+            content += vendorsConf.path + '/' + file + '\n';
+            count++;
+        });
+    });
+    content += 'NETWORK:\n';
+    content += '*\n';
+    content += 'FALLBACK:\n';
+    fs.writeFileSync(path, content);
+    console.log('Total manifest size is about ? for ' + count + ' resources.');
+    callback();
+});
+
+gulp.task('service-worker', (callback) => {
+    const baseDir = 'src-front/prod';
+    const fileName = 'service-worker.js';
+    const dynamicUrlToDependencies = {};
+    const vendorsConf = config.expressStaticsVendorsConf;
+    vendorsConf.vendors.forEach((vendor, index, array) => {
+        vendor.files.forEach((file, index, array) => {
+            dynamicUrlToDependencies[vendorsConf.path + '/' + file] = [vendor.folder + '/' + file];
+        });
+    });
+    swPrecache.write('src-front/dev/' + fileName, {
+        staticFileGlobs: [
+            baseDir + '/**/*'
+        ],
+        dynamicUrlToDependencies: dynamicUrlToDependencies,
+        stripPrefix: baseDir,
+    }, function () {
+        gulp.src('src-front/dev/' + fileName).pipe(uglify()).pipe(gulp.dest('src-front/prod'));
+        callback();
+    });
+});
+
 gulp.task('copy-js', gulp.series('analyze-js', 'uglify-js'));
 
-gulp.task('copy', gulp.parallel('copy-js', 'copy-css', 'copy-img', 'copy-snd', 'copy-html'));
+gulp.task('optimize', gulp.parallel('copy-js', 'copy-css', 'copy-img', 'copy-snd', 'copy-html'));
 
-gulp.task('default', gulp.series('clean', 'copy'));
+gulp.task('finalize', gulp.parallel('service-worker', 'manifest.cache'));
+
+gulp.task('default', gulp.series('prepare', 'optimize', 'finalize'));

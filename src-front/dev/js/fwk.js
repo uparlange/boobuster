@@ -6,9 +6,12 @@
     let resourcesCount = 0;
     const sounds = {};
     const logAppender = console;
+    const keyboard = {};
     const fwkJs = ["/js/vendors/pixi.min.js", "/js/vendors/howler.min.js"];
     const setConfiguration = function (config) {
         configuration = config;
+        app.applicationWidth = config.application.width;
+        app.applicationHeight = config.application.height;
         resourcesCount = fwkJs.length + configuration.resources.images.length + configuration.resources.sounds.length + configuration.resources.javascripts.length;
     };
     const callResourcesLoadedHandler = function (count) {
@@ -78,85 +81,116 @@
             }
         });
     };
+    const loadState = function (stateName) {
+        return new Promise(function (resolve) {
+            if (states[stateName]) {
+                resolve(states[stateName]);
+            } else {
+                loadJavascripts(["/js/states/" + stateName + ".js"]).then(() => {
+                    resolve(states[stateName]);
+                });
+            }
+        });
+    };
     const enableDisableStateScene = function (scene, enabled) {
         scene.children.forEach((child) => {
             child.enabled = enabled;
+            enableDisableStateScene(child, enabled);
         });
         scene.visible = enabled;
     };
-    app.getSound = function (name) {
+    const initEvents = function () {
+        window.addEventListener("keydown", (event) => {
+            let key = keyboard[event.keyCode];
+            if (key == undefined) {
+                key = { isUp: true, isDown: false };
+                keyboard[event.keyCode] = key;
+            }
+            if (key.isUp && currentState.onKeyPress) {
+                currentState.onKeyPress(event.keyCode);
+            }
+            key.isDown = true;
+            key.isUp = false;
+        }, false);
+        window.addEventListener("keyup", (event) => {
+            let key = keyboard[event.keyCode];
+            if (key.isDown && currentState.onKeyRelease) {
+                currentState.onKeyRelease(event.keyCode)
+            }
+            key.isDown = false;
+            key.isUp = true;
+        }, false);
+    };
+    app.fwkGetSound = function (name) {
         return sounds[name];
     };
-    app.configure = function (config) {
+    app.fwkDefineApplication = function (config) {
         setConfiguration(config);
         loadJavascripts(fwkJs).then(() => {
-            let stateDescription = null;
             pixi = new PIXI.Application(configuration.application);
             document.body.appendChild(pixi.view);
-            for (let stateName in configuration.states) {
-                stateDescription = configuration.states[stateName];
-                const scene = new PIXI.Container();
-                stateDescription.state = {
-                    name: stateName,
-                    scene: scene
-                };
-                pixi.stage.addChild(scene);
-                states[stateName] = stateDescription;
-                if (stateName === "loading") {
-                    stateDescription.setup();
-                    enableDisableStateScene(stateDescription.state.scene, false);
-                    app.moveTo("loading");
-                }
-            }
-            loadJavascripts(configuration.resources.javascripts).then(() => {
-                if (configuration.handlers && configuration.handlers.onJavascriptsLoaded) {
-                    configuration.handlers.onJavascriptsLoaded(PIXI, pixi.view);
-                }
-                pixi.ticker.add((delta) => {
-                    if (configuration.handlers && configuration.handlers.onTick) {
-                        configuration.handlers.onTick();
+            app.fwkMoveToState("loading").then(() => {
+                initEvents();
+                loadJavascripts(configuration.resources.javascripts).then(() => {
+                    if (configuration.handlers && configuration.handlers.onJavascriptsLoaded) {
+                        configuration.handlers.onJavascriptsLoaded(PIXI, pixi.view);
                     }
-                    currentState.tick(delta);
-                });
-                loadSounds(configuration.resources.sounds).then(() => {
-                    if (configuration.handlers && configuration.handlers.onSoundsLoaded) {
-                        configuration.handlers.onSoundsLoaded();
-                    }
-                    loadImages(configuration.resources.images).then(() => {
-                        if (configuration.handlers && configuration.handlers.onImagesLoaded) {
-                            configuration.handlers.onImagesLoaded();
+                    pixi.ticker.add((delta) => {
+                        if (configuration.handlers && configuration.handlers.onTick) {
+                            configuration.handlers.onTick();
                         }
-                        setTimeout(() => {
-                            for (let stateName in configuration.states) {
-                                stateDescription = states[stateName];
-                                if (stateName != "loading") {
-                                    stateDescription.setup();
-                                    enableDisableStateScene(stateDescription.state.scene, false);
-                                }
+                        currentState.onTick(delta);
+                    });
+                    loadSounds(configuration.resources.sounds).then(() => {
+                        if (configuration.handlers && configuration.handlers.onSoundsLoaded) {
+                            configuration.handlers.onSoundsLoaded();
+                        }
+                        loadImages(configuration.resources.images).then(() => {
+                            if (configuration.handlers && configuration.handlers.onImagesLoaded) {
+                                configuration.handlers.onImagesLoaded();
                             }
-                            app.moveTo(configuration.defaultState);
-                        }, 1000);
+                            app.fwkMoveToState(configuration.defaultState);
+                        });
                     });
                 });
             });
         });
     };
-    app.moveTo = function (stateName, params) {
-        let previousState = null;
-        if (currentState) {
-            previousState = currentState.state.name;
-            if (currentState.beforeLeave) {
-                currentState.beforeLeave();
-            }
-            enableDisableStateScene(currentState.state.scene, false);
-        }
-        currentState = states[stateName];
-        logAppender.debug("Display state : " + currentState.state.name);
-        currentState.state.previousState = previousState;
-        currentState.state.params = params;
-        if (currentState.beforeEnter) {
-            currentState.beforeEnter();
-        }
-        enableDisableStateScene(currentState.state.scene, true);
+    app.fwkDefineState = function (stateName, stateDescription) {
+        const scene = new PIXI.Container();
+        stateDescription.state = {
+            name: stateName,
+            scene: scene
+        };
+        pixi.stage.addChild(scene);
+        states[stateName] = stateDescription;
+        stateDescription.setup();
+        enableDisableStateScene(stateDescription.state.scene, false);
+    };
+    app.fwkMoveToState = function (stateName, params) {
+        return new Promise((resolve) => {
+            loadState(stateName).then(() => {
+                let previousState = null;
+                if (currentState) {
+                    previousState = currentState.state.name;
+                    if (currentState.beforeLeave) {
+                        currentState.beforeLeave();
+                    }
+                    enableDisableStateScene(currentState.state.scene, false);
+                }
+                currentState = states[stateName];
+                app.getLogger().debug("Fwk - display state : " + currentState.state.name);
+                currentState.state.previousState = previousState;
+                currentState.state.params = params;
+                if (currentState.beforeEnter) {
+                    currentState.beforeEnter();
+                }
+                enableDisableStateScene(currentState.state.scene, true);
+                resolve();
+            });
+        });
+    };
+    app.getLogger = function() {
+        return logAppender;
     };
 }(window.app || (window.app = {})));

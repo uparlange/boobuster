@@ -8,10 +8,6 @@
     ],
     "globals": {
         "PIXI": true,
-        "scaleToWindow": true,
-        "Bump": true,
-        "Tink": true,
-        "GameUtilities": true,
         "Howl": true
     }
 }
