@@ -80,7 +80,7 @@
         // https://github.com/beebole/mobile-app-demo/blob/master/index.html
         var iframe = document.createElement("iframe");
         iframe.style.display = "none";
-        iframe.src = "/app-cache";
+        iframe.src = "/manifest.html";
         document.body.appendChild(iframe);
         window.addEventListener("load", function () {
             window.applicationCache.addEventListener("updateready", function () {
