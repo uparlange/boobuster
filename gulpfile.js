@@ -36,7 +36,7 @@ gulp.task('copy-snd', () => {
 });
 
 gulp.task('copy-html', () => {
-    return gulp.src('src-front/dev/index.html').pipe(htmlclean()).pipe(gulp.dest('src-front/prod'));
+    return gulp.src('src-front/dev/*.html').pipe(htmlclean()).pipe(gulp.dest('src-front/prod'));
 });
 
 gulp.task('manifest.cache', (callback) => {
