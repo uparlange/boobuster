@@ -1,5 +1,19 @@
 {
     "expressPort": "3000",
+    "expressViewsConf": {
+        "folder": "src-front/views",
+        "engine": "pug",
+        "files": [
+            {
+                "path": "/",
+                "value": "index.pug"
+            },
+            {
+                "path": "/app-cache",
+                "value": "app-cache.pug"
+            }
+        ]
+    },
     "expressStaticsVendorsConf": {
         "path": "/js/vendors",
         "vendors": [

@@ -1,6 +1,6 @@
 {
   "name": "boobuster",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Boobuster",
   "main": "index.js",
   "scripts": {
@@ -16,12 +16,13 @@
     "gulp": "4.0.0",
     "gulp-clean-css": "3.9.3",
     "gulp-eslint": "4.0.2",
-    "gulp-htmlclean": "2.7.20",
+    "gulp-htmlclean": "2.7.22",
     "gulp-imagemin": "4.1.0",
     "gulp-uglify-es": "1.0.1",
     "howler": "2.0.9",
-    "nodemon": "1.17.2",
-    "pixi.js": "4.7.1",
-    "sw-precache": "5.2.1"
+    "nodemon": "1.17.3",
+    "pixi.js": "4.7.3",
+    "sw-precache": "5.2.1",
+    "pug": "2.0.3"
   }
 }

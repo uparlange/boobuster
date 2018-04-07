@@ -52,6 +52,7 @@
     const serviceWorkerAvailable = "serviceWorker" in navigator;
     const applicationCacheAvailable = "applicationCache" in window;
     if (serviceWorkerAvailable) {
+        // https://github.com/GoogleChromeLabs/sw-precache/blob/master/demo/app/js/service-worker-registration.js
         window.addEventListener("load", function () {
             navigator.serviceWorker.register("/service-worker.js").then(function (reg) {
                 reg.onupdatefound = function () {
@@ -80,7 +81,7 @@
         // https://github.com/beebole/mobile-app-demo/blob/master/index.html
         var iframe = document.createElement("iframe");
         iframe.style.display = "none";
-        iframe.src = "/manifest.html";
+        iframe.src = "/app.cache";
         document.body.appendChild(iframe);
         window.addEventListener("load", function () {
             window.applicationCache.addEventListener("updateready", function () {

@@ -39,10 +39,10 @@ gulp.task('copy-html', () => {
     return gulp.src('src-front/dev/*.html').pipe(htmlclean()).pipe(gulp.dest('src-front/prod'));
 });
 
-gulp.task('manifest.cache', (callback) => {
+gulp.task('app.cache', (callback) => {
     let count = 0;
     const baseDir = 'src-front/prod';
-    const path = baseDir + '/manifest.cache';
+    const path = baseDir + '/app.cache';
     const readDir = (dir) => {
         fs.readdirSync(dir).forEach((item, index, array) => {
             const path = dir + '/' + item;
@@ -61,12 +61,15 @@ gulp.task('manifest.cache', (callback) => {
     content += '# ' + pkg.version + '\n';
     content += 'CACHE:\n';
     readDir(baseDir);
-    const vendorsConf = config.expressStaticsVendorsConf;
-    vendorsConf.vendors.forEach((vendor, index, array) => {
+    config.expressStaticsVendorsConf.vendors.forEach((vendor, index, array) => {
         vendor.files.forEach((file, index, array) => {
-            content += vendorsConf.path + '/' + file + '\n';
+            content += config.expressStaticsVendorsConf.path + '/' + file + '\n';
             count++;
         });
+    });
+    config.expressViewsConf.files.forEach((file, index, array) => {
+        content += file.path + '\n';
+        count++;
     });
     content += 'NETWORK:\n';
     content += '*\n';
@@ -80,11 +83,13 @@ gulp.task('service-worker', (callback) => {
     const baseDir = 'src-front/prod';
     const fileName = 'service-worker.js';
     const dynamicUrlToDependencies = {};
-    const vendorsConf = config.expressStaticsVendorsConf;
-    vendorsConf.vendors.forEach((vendor, index, array) => {
+    config.expressStaticsVendorsConf.vendors.forEach((vendor, index, array) => {
         vendor.files.forEach((file, index, array) => {
-            dynamicUrlToDependencies[vendorsConf.path + '/' + file] = [vendor.folder + '/' + file];
+            dynamicUrlToDependencies[config.expressStaticsVendorsConf.path + '/' + file] = [vendor.folder + '/' + file];
         });
+    });
+    config.expressViewsConf.files.forEach((file, index, array) => {
+        dynamicUrlToDependencies[file.path] = [config.expressViewsConf.folder + '/' + file.value];
     });
     swPrecache.write('src-front/dev/' + fileName, {
         staticFileGlobs: [
@@ -102,6 +107,6 @@ gulp.task('copy-js', gulp.series('analyze-js', 'uglify-js'));
 
 gulp.task('optimize', gulp.parallel('copy-js', 'copy-css', 'copy-img', 'copy-snd', 'copy-html'));
 
-gulp.task('finalize', gulp.parallel('service-worker', 'manifest.cache'));
+gulp.task('finalize', gulp.parallel('service-worker', 'app.cache'));
 
 gulp.task('default', gulp.series('prepare', 'optimize', 'finalize'));
