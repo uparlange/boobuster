@@ -1,11 +1,14 @@
 const config = require("./config.json");
 const express = require("express");
+const compression = require("compression");
 const pkg = require("./../package.json");
 
 const PROD_MODE = process.env.NODE_ENV === "production";
 const PORT = process.env.PORT || config.expressPort;
 
 const app = express();
+
+app.use(compression());
 
 app.use(express.static("src-front" + (PROD_MODE ? "/prod" : "/dev")));
 config.expressStaticsVendorsConf.vendors.forEach(vendor => {
