@@ -19,7 +19,10 @@
                 "/js/vendors/bump.js", "/js/vendors/gameUtilities.js", "/js/vendors/scaleToWindow.js", "/js/vendors/tink.js"
             ]
         },
-        defaultState: "home",
+        defaultState: {
+            name: "home",
+            params: null
+        },
         handlers: {
             onResourcesLoaded: function (event) {
                 app.loadingSteps = event.total;

@@ -7,7 +7,6 @@
         _level: null,
         _lives: [],
         _music: null,
-        _deviceorientationHandler: null,
         _addBullet: function () {
             const bullet = new Bullet(); /* global Bullet */
             bullet.getSprite().x = this._mario.getSprite().x + 5;
@@ -56,19 +55,6 @@
             this._lives.forEach(life => {
                 life.getSprite().visible = true;
             });
-            // device orientation
-            this._deviceorientationHandler = (event) => {
-                const gamma = Math.round(event.gamma);
-                const sprite = this._mario.getSprite();
-                if (gamma < 0) {
-                    sprite.vx = Math.max(gamma, -5);
-                } else if (gamma > 0) {
-                    sprite.vx = Math.min(gamma, 5);
-                } else {
-                    sprite.vx = 0;
-                }
-            }
-            window.addEventListener("deviceorientation", this._deviceorientationHandler);
         },
         setup: function () {
             // music
@@ -103,10 +89,21 @@
             this._mario.getSprite().y = app.applicationHeight - this._mario.getSprite().height;
             this.state.scene.addChild(this._mario.getSprite());
         },
+        onDeviceOrientation: function (event) {
+            const gamma = Math.round(event.gamma);
+            const sprite = this._mario.getSprite();
+            if (gamma < 0) {
+                sprite.vx = Math.max(gamma, -5);
+            } else if (gamma > 0) {
+                sprite.vx = Math.min(gamma, 5);
+            } else {
+                sprite.vx = 0;
+            }
+        },
         onKeyPress: function (keyCode) {
             switch (keyCode) {
                 case 37: this._mario.getSprite().vx = -5; break; // left
-                case 39: this._mario.getSprite().vx = 5; break;// right
+                case 39: this._mario.getSprite().vx = 5; break; // right
             }
         },
         onKeyRelease: function (keyCode) {
@@ -169,8 +166,6 @@
         beforeLeave: function () {
             // music
             this._music.stop();
-            // device orientation
-            window.removeEventListener("deviceorientation", this._deviceorientationHandler);
         }
     });
 }(window.app || (window.app = {})));    

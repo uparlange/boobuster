@@ -102,7 +102,7 @@
     const initEvents = function () {
         window.addEventListener("keydown", (event) => {
             let key = keyboard[event.keyCode];
-            if (key == undefined) {
+            if (!key) {
                 key = { isUp: true, isDown: false };
                 keyboard[event.keyCode] = key;
             }
@@ -114,11 +114,18 @@
         }, false);
         window.addEventListener("keyup", (event) => {
             let key = keyboard[event.keyCode];
-            if (key.isDown && currentState.onKeyRelease) {
-                currentState.onKeyRelease(event.keyCode)
+            if (key) {
+                if (key.isDown && currentState.onKeyRelease) {
+                    currentState.onKeyRelease(event.keyCode)
+                }
+                key.isDown = false;
+                key.isUp = true;
             }
-            key.isDown = false;
-            key.isUp = true;
+        }, false);
+        window.addEventListener("deviceorientation", (event) => {
+            if (currentState.onDeviceOrientation) {
+                currentState.onDeviceOrientation(event);
+            }
         }, false);
     };
     app.fwkGetSound = function (name) {
@@ -137,7 +144,7 @@
                     }
                     pixi.ticker.add((delta) => {
                         if (configuration.handlers && configuration.handlers.onTick) {
-                            configuration.handlers.onTick();
+                            configuration.handlers.onTick(delta);
                         }
                         currentState.onTick(delta);
                     });
@@ -149,7 +156,7 @@
                             if (configuration.handlers && configuration.handlers.onImagesLoaded) {
                                 configuration.handlers.onImagesLoaded();
                             }
-                            app.fwkMoveToState(configuration.defaultState);
+                            app.fwkMoveToState(configuration.defaultState.name, configuration.defaultState.params);
                         });
                     });
                 });
@@ -190,7 +197,7 @@
             });
         });
     };
-    app.getLogger = function() {
+    app.getLogger = function () {
         return logAppender;
     };
 }(window.app || (window.app = {})));

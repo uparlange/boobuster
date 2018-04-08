@@ -46,6 +46,8 @@ class Mario extends Sprite { /* exported Mario */
     constructor() {
         super({ default: "mario.png" });
         this._lifeCount = 5;
+        this._hitAnimationCount = 0;
+        this._hitAnimationInterval = null;
         this._state = "normal";
     }
     get lifeCount() {
@@ -63,14 +65,30 @@ class Mario extends Sprite { /* exported Mario */
             } else {
                 window.app.fwkGetSound("/snd/mario_hit.mp3").play();
                 this._state = "hit";
-                setTimeout(() => {
+                this._hitAnimation().then(() => {
                     this._state = "normal";
-                }, 3000);
+                });
             }
         }
     }
     isDead() {
         return this._state === "dead";
+    }
+    _hitAnimation() {
+        return new Promise((resolve) => {
+            this._sprite.alpha = 0;
+            this._hitAnimationInterval = setInterval(() => {
+                this._hitAnimationCount++;
+                if (this._hitAnimationCount === 12) {
+                    clearInterval(this._hitAnimationInterval);
+                    this._hitAnimationCount = 0;
+                    this._sprite.alpha = 1;
+                    resolve();
+                } else {
+                    this._sprite.alpha = (this._sprite.alpha === 1 ? 0 : 1);
+                }
+            }, 250);
+        });
     }
 }
 class Boo extends Sprite { /* exported Boo */
