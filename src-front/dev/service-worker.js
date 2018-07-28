@@ -37,7 +37,7 @@
 /* eslint-disable indent, no-unused-vars, no-multiple-empty-lines, max-nested-callbacks, space-before-function-paren, quotes, comma-spacing */
 'use strict';
 
-var precacheConfig = [["/","b33207bd35d00db5fb1f4fd3064be9fc"],["/app-cache","c5c2f7fef62f604f53dfe9173e61fe0c"],["/css/app.css","081e893d1b27398d46f3e9aa234489a6"],["/img/boobuster.json","06fd67a4ddd92ab181ba337c43992c6c"],["/img/boobuster.png","7d1e71fe05f6725ac2de0b4a3fd63189"],["/img/favicon/android-chrome-192x192.png","bb7335a1e299144516057c50be28085b"],["/img/favicon/android-chrome-512x512.png","b00a0845f6ee285d153f6efc61f58cf6"],["/img/favicon/apple-touch-icon.png","627284c06d8b78b3fce764bbb952cac1"],["/img/favicon/browserconfig.xml","c4fcf70b3b8dae796835a1eb62947e08"],["/img/favicon/favicon-16x16.png","5cfd65e92811baa9e4b424c5ff9fbd84"],["/img/favicon/favicon-32x32.png","ec39959547d421228506690709b429fd"],["/img/favicon/favicon.ico","265400a295739c3b1461a6bd5007f617"],["/img/favicon/mstile-150x150.png","e42f8fe6b2b23367ae7396d08dd44f64"],["/img/favicon/safari-pinned-tab.svg","bd9a20cd8825d3ec9535f91f44bc4b1a"],["/img/favicon/site.webmanifest","2ec8828263fe81cce85c4c4c6ef36a6a"],["/img/splash/launch-1125x2436.jpg","eb502bcbdecf47df6ae45213ef6aaad5"],["/img/splash/launch-1242x2148.jpg","4adaaac44c43db398747fe2896e4d6fe"],["/img/splash/launch-1536x2048.jpg","3929128549911723e71cab7d200fb0c3"],["/img/splash/launch-1668x2224.jpg","dc81f1eefa97cd7d5d479ce3b70f5b20"],["/img/splash/launch-2048x2732.jpg","b9aeb5f492097ab70b3c8e43a22c7a6a"],["/img/splash/launch-640x1136.jpg","271f8f74c907abcc9b7c61f8ad816c27"],["/img/splash/launch-750x1294.jpg","ebc424d54930982454ac3288a6555c1a"],["/js/app.js","a871a1c8c61d5960b8ca71db59056844"],["/js/common.js","434d9d1ddc329ca58c87b1ab526c3ff4"],["/js/fwk.js","f320c30ab8940ea3eff2dc5582bad2c4"],["/js/states/game_over.js","ec0e367fa7981fd21fb976c9946f5573"],["/js/states/home.js","85790c72ec411299df4361311f8f7ec4"],["/js/states/level.js","54324157b669c30a1184b11d06f1f26f"],["/js/states/level_cleared.js","9063e2d3ae899556aa3d235028adea0e"],["/js/states/loading.js","23a0e4c05e6b34cbbdd8c4ba3dd83c12"],["/js/vendors/bump.js","a3cbf231a5ddd9d3f2731c19fb81c1ea"],["/js/vendors/gameUtilities.js","1aa3662dd60f19a4cee702427f27082f"],["/js/vendors/howler.min.js","027d89fe1ec2c2d9a78217bb0c65b357"],["/js/vendors/pixi.min.js","f30b57ababaf6e0864221c14a403ecd7"],["/js/vendors/scaleToWindow.js","9f356d897d6c3222289f42361cef4428"],["/js/vendors/tink.js","ebc8e6086f0033d6acc4c0786b902e59"],["/snd/beetlejuice.mp3","5ae155361467d8ae2696686374bfe181"],["/snd/boo_hit.mp3","8abae1e423b348042609cbd51e84c926"],["/snd/fireball.mp3","1208fccd4046018e0972f3d1719d4759"],["/snd/ghost_die.mp3","691655ab4601f0cd07201c370514b120"],["/snd/level_cleared.mp3","3bbb9214ef9e6c546e3701aa9d31998d"],["/snd/mario_die.mp3","b8f69bfb0ec4612ee70cd06645d19cf2"],["/snd/mario_hit.mp3","e4eb3693d92e4fd4d6c893a0b32b6b7e"],["/snd/mortuary.mp3","953b1bcb859794009f741057ee1a3ee7"]];
+var precacheConfig = [["/","8fc18f43ae57d44e28fbfaaf980e4245"],["/app-cache","c5c2f7fef62f604f53dfe9173e61fe0c"],["/css/app.css","081e893d1b27398d46f3e9aa234489a6"],["/img/boobuster.json","06fd67a4ddd92ab181ba337c43992c6c"],["/img/boobuster.png","7d1e71fe05f6725ac2de0b4a3fd63189"],["/img/favicon/android-chrome-192x192.png","bb7335a1e299144516057c50be28085b"],["/img/favicon/android-chrome-512x512.png","b00a0845f6ee285d153f6efc61f58cf6"],["/img/favicon/apple-touch-icon.png","627284c06d8b78b3fce764bbb952cac1"],["/img/favicon/browserconfig.xml","c4fcf70b3b8dae796835a1eb62947e08"],["/img/favicon/favicon-16x16.png","5cfd65e92811baa9e4b424c5ff9fbd84"],["/img/favicon/favicon-32x32.png","ec39959547d421228506690709b429fd"],["/img/favicon/favicon.ico","265400a295739c3b1461a6bd5007f617"],["/img/favicon/mstile-150x150.png","e42f8fe6b2b23367ae7396d08dd44f64"],["/img/favicon/safari-pinned-tab.svg","bd9a20cd8825d3ec9535f91f44bc4b1a"],["/img/favicon/site.webmanifest","2ec8828263fe81cce85c4c4c6ef36a6a"],["/img/splash/launch-1125x2436.jpg","eb502bcbdecf47df6ae45213ef6aaad5"],["/img/splash/launch-1242x2148.jpg","4adaaac44c43db398747fe2896e4d6fe"],["/img/splash/launch-1536x2048.jpg","3929128549911723e71cab7d200fb0c3"],["/img/splash/launch-1668x2224.jpg","dc81f1eefa97cd7d5d479ce3b70f5b20"],["/img/splash/launch-2048x2732.jpg","b9aeb5f492097ab70b3c8e43a22c7a6a"],["/img/splash/launch-640x1136.jpg","271f8f74c907abcc9b7c61f8ad816c27"],["/img/splash/launch-750x1294.jpg","ebc424d54930982454ac3288a6555c1a"],["/js/app.js","766a3279959232c9f4fb3b5cadbf26ac"],["/js/classes/BlueBoo.js","02515c844d9637240a478ef96c5697b1"],["/js/classes/BlueKingBoo.js","43d20338b3b26a060bb62e39ea283f06"],["/js/classes/Boo.js","2e48826b2fadd21b98fbff2d8910e6f2"],["/js/classes/Bullet.js","c97216d025368e7afa1335c22442ee25"],["/js/classes/DarkBoo.js","811a971f6f5ca02265390139ecabd2ab"],["/js/classes/KingBoo.js","18925f6dabd489862acfe82faaa14655"],["/js/classes/Life.js","655e9063f20ef0e52633fe1ec5d122b8"],["/js/classes/Mario.js","be8be8b724c87a5476eec5dac9b96399"],["/js/classes/PinkBoo.js","7b75cba9592fcf8225d237fb504f93d7"],["/js/classes/Sprite.js","21fa61369ab7d6385f6f005d6e425118"],["/js/fwk.js","3e9a5f87b7307da9faae12e878d3300b"],["/js/states/game_over.js","4ffc3872abe819e874f71076569f2e92"],["/js/states/home.js","57d1e8565599686b0d1af01c9f0c0418"],["/js/states/level.js","785c9fee4b12ce70de7da6012280602f"],["/js/states/level_cleared.js","450442798179b61166d0f6baa4107a32"],["/js/states/loading.js","37e4354c9f38aca5ca9241e7d17b8aa5"],["/js/vendors/bump.js","a3cbf231a5ddd9d3f2731c19fb81c1ea"],["/js/vendors/gameUtilities.js","1aa3662dd60f19a4cee702427f27082f"],["/js/vendors/howler.min.js","af47faf3dc3f609434feecf99fd45dbc"],["/js/vendors/pixi.min.js","f8c09af4fc2dabb7d4229b2483b3039a"],["/js/vendors/scaleToWindow.js","9f356d897d6c3222289f42361cef4428"],["/js/vendors/tink.js","deb57ecac6a9abbc9d0f4559525772ec"],["/snd/beetlejuice.mp3","5ae155361467d8ae2696686374bfe181"],["/snd/boo_hit.mp3","8abae1e423b348042609cbd51e84c926"],["/snd/fireball.mp3","1208fccd4046018e0972f3d1719d4759"],["/snd/ghost_die.mp3","691655ab4601f0cd07201c370514b120"],["/snd/level_cleared.mp3","3bbb9214ef9e6c546e3701aa9d31998d"],["/snd/mario_die.mp3","b8f69bfb0ec4612ee70cd06645d19cf2"],["/snd/mario_hit.mp3","e4eb3693d92e4fd4d6c893a0b32b6b7e"],["/snd/mortuary.mp3","953b1bcb859794009f741057ee1a3ee7"]];
 var cacheName = 'sw-precache-v3--' + (self.registration ? self.registration.scope : '');
 
 
@@ -45,7 +45,7 @@ var ignoreUrlParametersMatching = [/^utm_/];
 
 
 
-var addDirectoryIndex = function (originalUrl, index) {
+var addDirectoryIndex = function(originalUrl, index) {
     var url = new URL(originalUrl);
     if (url.pathname.slice(-1) === '/') {
       url.pathname += index;
@@ -53,7 +53,7 @@ var addDirectoryIndex = function (originalUrl, index) {
     return url.toString();
   };
 
-var cleanResponse = function (originalResponse) {
+var cleanResponse = function(originalResponse) {
     // If this is not a redirected response, then we don't have to do anything.
     if (!originalResponse.redirected) {
       return Promise.resolve(originalResponse);
@@ -75,7 +75,7 @@ var cleanResponse = function (originalResponse) {
     });
   };
 
-var createCacheKey = function (originalUrl, paramName, paramValue,
+var createCacheKey = function(originalUrl, paramName, paramValue,
                            dontCacheBustUrlsMatching) {
     // Create a new URL object to avoid modifying originalUrl.
     var url = new URL(originalUrl);
@@ -91,7 +91,7 @@ var createCacheKey = function (originalUrl, paramName, paramValue,
     return url.toString();
   };
 
-var isPathWhitelisted = function (whitelist, absoluteUrlString) {
+var isPathWhitelisted = function(whitelist, absoluteUrlString) {
     // If the whitelist is empty, then consider all URLs to be whitelisted.
     if (whitelist.length === 0) {
       return true;
@@ -104,7 +104,7 @@ var isPathWhitelisted = function (whitelist, absoluteUrlString) {
     });
   };
 
-var stripIgnoredUrlParameters = function (originalUrl,
+var stripIgnoredUrlParameters = function(originalUrl,
     ignoreUrlParametersMatching) {
     var url = new URL(originalUrl);
     // Remove the hash; see https://github.com/GoogleChrome/sw-precache/issues/290

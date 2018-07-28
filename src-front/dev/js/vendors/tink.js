@@ -32,7 +32,7 @@ var Tink = (function () {
     this.TextureCache = this.PIXI.utils.TextureCache;
 
     //Note: change MovieClip to AnimatedSprite for Pixi v4
-    this.AnimatedSprite = this.PIXI.extras.AnimatedSprite;
+    this.AnimatedSprite = this.PIXI.AnimatedSprite;
     this.Texture = this.PIXI.Texture;
   }
 
@@ -394,8 +394,8 @@ var Tink = (function () {
       window.addEventListener("mouseup", pointer.upHandler.bind(pointer), false);
 
       //Touch events
-      element.addEventListener("touchmove", pointer.touchmoveHandler.bind(pointer), {passive: true});
-      element.addEventListener("touchstart", pointer.touchstartHandler.bind(pointer), {passive: true});
+      element.addEventListener("touchmove", pointer.touchmoveHandler.bind(pointer), false);
+      element.addEventListener("touchstart", pointer.touchstartHandler.bind(pointer), false);
 
       //Add the `touchend` event to the `window` object to
       //catch a mouse button release outside of the canvas area

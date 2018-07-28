@@ -2,7 +2,9 @@
 
 ## Description
 
-TODO...
+Simple game developped with my sons based on Mario's theme !
+
+![Screenshot](https://raw.githubusercontent.com/uparlange/boobuster/master/src-front/dev/img/favicon/android-chrome-512x512.png?raw=true)
 
 ## Try it
 

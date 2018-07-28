@@ -9,5 +9,8 @@
     "globals": {
         "PIXI": true,
         "Howl": true
+    },
+    "parserOptions": {
+        "sourceType": "module"
     }
 }

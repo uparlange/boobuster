@@ -16,7 +16,7 @@ gulp.task('prepare', () => {
 });
 
 gulp.task('analyze-js', () => {
-    return gulp.src(['src-front/dev/js/*.js', 'src-front/dev/js/states/*.js']).pipe(eslint()).pipe(eslint.format()).pipe(eslint.failAfterError());
+    return gulp.src(['src-front/dev/js/*.js', 'src-front/dev/js/states/*.js', 'src-front/dev/js/classes/*.js']).pipe(eslint()).pipe(eslint.format()).pipe(eslint.failAfterError());
 });
 
 gulp.task('uglify-js', () => {
