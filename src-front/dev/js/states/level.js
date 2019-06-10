@@ -135,16 +135,16 @@ Fwk.defineState("level", {
             currentBoo.move({ x: 0, y: 0, width: Fwk.applicationWidth, height: Fwk.applicationHeight });
             // manage collision for leaving boos
             if (!currentBoo.isDead()) {
-                // boo againt boo
-                const leavingBoos = this._boos.filter(boo => !boo.isDead());
-                leavingBoos.forEach(otherBoo => {
+                // boo against boo
+                const livingBoos = this._boos.filter(boo => !boo.isDead());
+                livingBoos.forEach(otherBoo => {
                     if (otherBoo != currentBoo) {
                         if (Fwk.data.bump.hitTestCircle(currentBoo.getSprite(), otherBoo.getSprite())) {
                             Fwk.data.bump.movingCircleCollision(currentBoo.getSprite(), otherBoo.getSprite());
                         }
                     }
                 });
-                // boo againt bullet
+                // boo against bullet
                 this._bullets.forEach(bullet => {
                     if (Fwk.data.bump.hitTestCircle(currentBoo.getSprite(), bullet.getSprite())) {
                         Fwk.data.bump.movingCircleCollision(currentBoo.getSprite(), bullet.getSprite());
@@ -162,8 +162,8 @@ Fwk.defineState("level", {
             }
         });
         // check end
-        const leavingBoos = this._boos.filter(boo => !boo.isDead());
-        if (leavingBoos.length === 0) {
+        const livingBoos = this._boos.filter(boo => !boo.isDead());
+        if (livingBoos.length === 0) {
             Fwk.moveToState("level_cleared", { level: this.state.params.level });
         } else if (this._mario.isDead()) {
             Fwk.moveToState("game_over");
