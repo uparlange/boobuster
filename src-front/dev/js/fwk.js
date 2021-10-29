@@ -218,11 +218,10 @@ Fwk.askDeviceOrientationEventPermission = function () {
                         });
                         deviceOrientationEventInitialized = true;
                     }
-                } else {
-                    setTimeout(() => {
-                        resolve();
-                    });
                 }
+                setTimeout(() => {
+                    resolve();
+                });
             }).catch(console.error);
         } else {
             setTimeout(() => {
