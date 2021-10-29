@@ -23,7 +23,7 @@ Fwk.defineState("level_cleared", {
         mario.y = 60;
         Fwk.userModel.tink.makeInteractive(mario);
         mario.release = () => {
-            this.playNextLevel(this.state);
+            playNextLevel(this.state);
         }
         this.state.scene.addChild(mario);
         // message
