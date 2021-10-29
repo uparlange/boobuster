@@ -7,10 +7,6 @@
             {
                 "path": "/",
                 "value": "index.pug"
-            },
-            {
-                "path": "/app-cache",
-                "value": "app-cache.pug"
             }
         ]
     },

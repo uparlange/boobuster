@@ -95,8 +95,8 @@ Fwk.defineState("level", {
         this._mario.getSprite().y = Fwk.applicationHeight - this._mario.getSprite().height;
         this.state.scene.addChild(this._mario.getSprite());
     },
-    onDeviceOrientation: function (frontToBack, leftToRight, rotateDegrees) {
-        const value = Math.round(leftToRight);
+    onDeviceOrientation: function (event) {
+        const value = Math.round(event.leftToRight);
         const sprite = this._mario.getSprite();
         if (value < 0) {
             sprite.vx = Math.max(value, -5);
@@ -173,4 +173,4 @@ Fwk.defineState("level", {
         // music
         this._music.stop();
     }
-});  
+});

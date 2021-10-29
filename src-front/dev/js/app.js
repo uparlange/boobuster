@@ -58,46 +58,28 @@ Fwk.defineApplication({
     }
 });
 
-const serviceWorkerAvailable = "serviceWorker" in navigator;
-const applicationCacheAvailable = "applicationCache" in window;
-if (serviceWorkerAvailable) {
-    // https://github.com/GoogleChromeLabs/sw-precache/blob/master/demo/app/js/service-worker-registration.js
-    window.addEventListener("load", function () {
-        navigator.serviceWorker.register("/service-worker.js").then(function (reg) {
-            reg.onupdatefound = function () {
-                var installingWorker = reg.installing;
-                installingWorker.onstatechange = function () {
-                    switch (installingWorker.state) {
-                        case "installed":
-                            if (navigator.serviceWorker.controller) {
-                                Fwk.getLogger().debug("New or updated content is available");
-                                window.location.reload();
-                            } else {
-                                Fwk.getLogger().debug("Content is now available offline");
-                            }
-                            break;
-                        case "redundant":
-                            Fwk.getLogger().debug("The installing service worker became redundant");
-                            break;
-                    }
-                };
+// https://github.com/GoogleChromeLabs/sw-precache/blob/master/demo/app/js/service-worker-registration.js
+window.addEventListener("load", function () {
+    navigator.serviceWorker.register("/service-worker.js").then(function (reg) {
+        reg.onupdatefound = function () {
+            var installingWorker = reg.installing;
+            installingWorker.onstatechange = function () {
+                switch (installingWorker.state) {
+                    case "installed":
+                        if (navigator.serviceWorker.controller) {
+                            Fwk.getLogger().debug("New or updated content is available");
+                            window.location.reload();
+                        } else {
+                            Fwk.getLogger().debug("Content is now available offline");
+                        }
+                        break;
+                    case "redundant":
+                        Fwk.getLogger().debug("The installing service worker became redundant");
+                        break;
+                }
             };
-        }).catch(function (e) {
-            Fwk.getLogger().debug("Error during service worker registration : " + e);
-        });
+        };
+    }).catch(function (e) {
+        Fwk.getLogger().debug("Error during service worker registration : " + e);
     });
-} else if (applicationCacheAvailable) {
-    // https://github.com/beebole/mobile-app-demo/blob/master/index.html
-    var iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = "/app.cache";
-    document.body.appendChild(iframe);
-    window.addEventListener("load", function () {
-        window.applicationCache.addEventListener("updateready", function () {
-            if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
-                window.applicationCache.swapCache();
-                window.location.reload();
-            }
-        });
-    });
-}
+});

@@ -133,7 +133,11 @@ const initEvents = function () {
             const leftToRight = event.gamma;
             // bêta : mouvement avant-arrière
             const frontToBack = event.beta;
-            currentState.onDeviceOrientation(frontToBack, leftToRight, rotateDegrees);
+            currentState.onDeviceOrientation({
+                frontToBack: frontToBack,
+                leftToRight: leftToRight,
+                rotateDegrees: rotateDegrees
+            });
         }
     });
 };
