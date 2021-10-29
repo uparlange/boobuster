@@ -33,6 +33,8 @@ const updatePlayButtonWidthAndPosition = function () {
 
 Fwk.defineState("home", {
     beforeEnter: function () {
+        // button
+        document.body.appendChild(playButton);
         // music
         music.play();
     },
@@ -62,7 +64,6 @@ Fwk.defineState("home", {
                 playGame();
             });
         }
-        document.body.appendChild(playButton);
         updatePlayButtonWidthAndPosition();
         // boos
         boos.push(new Boo());
