@@ -125,21 +125,31 @@ const initEvents = function () {
             key.isUp = true;
         }
     });
-    window.addEventListener("deviceorientation", (event) => {
-        if (currentState.onDeviceOrientation) {
-            // alpha : rotation autour de l'axe z
-            const rotateDegrees = event.alpha;
-            // gamma : de gauche à droite
-            const leftToRight = event.gamma;
-            // bêta : mouvement avant-arrière
-            const frontToBack = event.beta;
-            currentState.onDeviceOrientation({
-                frontToBack: frontToBack,
-                leftToRight: leftToRight,
-                rotateDegrees: rotateDegrees
-            });
-        }
-    });
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        DeviceOrientationEvent.requestPermission().then(permissionState => {
+            if (permissionState === "granted") {
+                window.addEventListener("deviceorientation", (event) => {
+                    if (currentState.onDeviceOrientation) {
+                        // alpha : rotation autour de l"axe z
+                        const rotateDegrees = event.alpha;
+                        // gamma : de gauche à droite
+                        const leftToRight = event.gamma;
+                        // bêta : mouvement avant-arrière
+                        const frontToBack = event.beta;
+                        currentState.onDeviceOrientation({
+                            frontToBack: frontToBack,
+                            leftToRight: leftToRight,
+                            rotateDegrees: rotateDegrees
+                        });
+                    }
+                });
+            } else {
+                alert("Device Orientation need to be granted !");
+            }
+        }).catch(console.error);
+    } else {
+        // handle regular non iOS 13+ devices
+    }
 };
 Fwk.getSound = function (name) {
     return sounds[name];
