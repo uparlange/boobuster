@@ -7,20 +7,38 @@ import PinkBoo from "./../classes/PinkBoo.js";
 import KingBoo from "./../classes/KingBoo.js";
 import BlueKingBoo from "./../classes/BlueKingBoo.js";
 
+const BUTTON_SIZE = 50;
+const boos = [];
+const music = Fwk.getSound("/snd/mortuary.mp3");
+
+let playButton = null;
+
+const playGame = function () {
+    Fwk.moveToState("level", { level: 1 });
+};
+
+const updatePlayButtonWidthAndPosition = function () {
+    const buttonSize = Fwk.userModel.tink.scale * BUTTON_SIZE;
+    playButton.style.borderRadius = (buttonSize / 2) + "px";
+    playButton.style.width = buttonSize + "px";
+    playButton.style.height = buttonSize + "px";
+    playButton.style.left = ((window.innerWidth / 2) - (buttonSize / 2)) + "px";
+    let buttonBottom = Fwk.userModel.tink.scale * 78;
+    const spaceHeight = window.innerHeight - (Fwk.userModel.tink.scale * Fwk.applicationHeight);
+    if(spaceHeight > 0) {
+        buttonBottom += spaceHeight / 2;
+    }
+    playButton.style.bottom = buttonBottom + "px";
+};
+
 Fwk.defineState("home", {
-    _boos: [],
-    _music: null,
-    _playGame: function () {
-        Fwk.moveToState("level", { level: 1 });
-    },
     beforeEnter: function () {
         // music
-        this._music.play();
+        music.play();
     },
     setup: function () {
         // music
-        this._music = Fwk.getSound("/snd/mortuary.mp3");
-        this._music.loop(true);
+        music.loop(true);
         // background
         const background = new PIXI.Sprite(PIXI.Loader.shared.resources["/img/boobuster.json"].textures["bg_home.png"]);
         this.state.scene.addChild(background);
@@ -33,48 +51,53 @@ Fwk.defineState("home", {
         title.y = 30;
         this.state.scene.addChild(title);
         // play
-        const play = new PIXI.Text("Play", new PIXI.TextStyle({
-            fontSize: 24,
-            fill: "white"
-        }));
-        play.x = (Fwk.applicationWidth / 2) - (play.width / 2);
-        play.y = 395;
-        Fwk.data.tink.makeInteractive(play);
-        play.release = () => {
+        playButton = document.createElement("button");
+        playButton.style.position = "absolute";
+        playButton.style.border = "1px solid white";
+        playButton.style.background = "none";
+        playButton.style.color = "white";
+        playButton.innerHTML = "Play";
+        playButton.onclick = () => {
             Fwk.askDeviceOrientationEventPermission().then(() => {
-                this._playGame();
+                playGame();
             });
         }
-        this.state.scene.addChild(play);
+        document.body.appendChild(playButton);
+        updatePlayButtonWidthAndPosition();
         // boos
-        this._boos.push(new Boo());
-        this._boos.push(new BlueBoo());
-        this._boos.push(new DarkBoo());
-        this._boos.push(new PinkBoo());
-        this._boos.push(new KingBoo());
-        this._boos.push(new BlueKingBoo());
-        this._boos.forEach((boo) => {
-            boo.getSprite().x = Fwk.data.gameUtilities.randomInt(0, Fwk.applicationWidth - boo.getSprite().height);
-            boo.getSprite().y = Fwk.data.gameUtilities.randomInt(0, Fwk.applicationHeight - 200);
-            boo.getSprite().vx = Fwk.data.gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            boo.getSprite().vy = Fwk.data.gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+        boos.push(new Boo());
+        boos.push(new BlueBoo());
+        boos.push(new DarkBoo());
+        boos.push(new PinkBoo());
+        boos.push(new KingBoo());
+        boos.push(new BlueKingBoo());
+        boos.forEach((boo) => {
+            boo.getSprite().x = Fwk.userModel.gameUtilities.randomInt(0, Fwk.applicationWidth - boo.getSprite().height);
+            boo.getSprite().y = Fwk.userModel.gameUtilities.randomInt(0, Fwk.applicationHeight - 200);
+            boo.getSprite().vx = Fwk.userModel.gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            boo.getSprite().vy = Fwk.userModel.gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
             this.state.scene.addChild(boo.getSprite());
         });
     },
+    onResize: function () {
+        updatePlayButtonWidthAndPosition();
+    },
     onKeyRelease: function (keyCode) {
         switch (keyCode) {
-            case "Space": this._playGame(); break;
+            case "Space": playGame(); break;
         }
     },
     onTick: function () {
         // boos
-        this._boos.forEach((boo) => {
+        boos.forEach((boo) => {
             boo.move({ x: 0, y: 0, width: Fwk.applicationWidth, height: Fwk.applicationHeight });
         });
-        Fwk.data.bump.multipleCircleCollision(this._boos.map(boo => boo.getSprite()))
+        Fwk.userModel.bump.multipleCircleCollision(boos.map(boo => boo.getSprite()))
     },
     beforeLeave: function () {
+        // button
+        document.body.removeChild(playButton);
         // music
-        this._music.stop();
+        music.stop();
     }
 });

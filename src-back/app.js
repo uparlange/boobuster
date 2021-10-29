@@ -22,7 +22,8 @@ config.expressViewsConf.files.forEach((file, index, array) => {
     app.get(file.path, function (req, res) {
         res.render(file.value.split(".")[0], {
             title: pkg.name.toUpperCase(),
-            vendorsConf: config.expressStaticsVendorsConf
+            vendorsConf: config.expressStaticsVendorsConf,
+            productionMode: PROD_MODE
         });
     });
 });

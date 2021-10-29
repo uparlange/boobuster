@@ -1,24 +1,24 @@
 import Fwk from "./../fwk.js";
 
+const music = Fwk.getSound("/snd/mario_die.mp3");
+
+const returnToHome = function () {
+    Fwk.moveToState("home");
+}
+
 Fwk.defineState("game_over", {
-    _music: null,
-    _returnToHome: function () {
-        Fwk.moveToState("home");
-    },
     beforeEnter: function () {
         // music
-        this._music.play();
+        music.play();
     },
     setup: function () {
-        // music
-        this._music = Fwk.getSound("/snd/mario_die.mp3");
         // mario
         const mario = new PIXI.Sprite(PIXI.Loader.shared.resources["/img/boobuster.json"].textures["mario_sad.png"]);
         mario.x = (Fwk.applicationWidth / 2) - (mario.width / 2);
         mario.y = 60;
-        Fwk.data.tink.makeInteractive(mario);
+        Fwk.userModel.tink.makeInteractive(mario);
         mario.release = () => {
-            this._returnToHome();
+            returnToHome();
         }
         this.state.scene.addChild(mario);
         // message
@@ -32,7 +32,7 @@ Fwk.defineState("game_over", {
     },
     onKeyRelease: function (keyCode) {
         switch (keyCode) {
-            case "Space": this._returnToHome(); break;
+            case "Space": returnToHome(); break;
         }
     },
     onTick: function () {
@@ -40,6 +40,6 @@ Fwk.defineState("game_over", {
     },
     beforeLeave: function () {
         // music
-        this._music.stop();
+        music.stop();
     }
 });

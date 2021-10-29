@@ -16,8 +16,8 @@ const setConfiguration = function (config) {
     resourcesCount = fwkJs.length + configuration.resources.images.length + configuration.resources.sounds.length + configuration.resources.javascripts.length;
 };
 const callResourcesLoadedHandler = function (count) {
-    if (configuration.handlers.onResourcesLoaded) {
-        configuration.handlers.onResourcesLoaded({ total: resourcesCount, count: count });
+    if (typeof configuration.handlers.onResourcesLoadedHandler === "function") {
+        configuration.handlers.onResourcesLoadedHandler({ total: resourcesCount, count: count });
     }
 };
 const loadJavascripts = function (list, type) {
@@ -45,7 +45,7 @@ const loadJavascripts = function (list, type) {
         } else {
             setTimeout(function () {
                 resolve();
-            }, 0);
+            });
         }
     });
 };
@@ -67,7 +67,7 @@ const loadSounds = function (list) {
         } else {
             setTimeout(function () {
                 resolve();
-            }, 0);
+            });
         }
     });
 };
@@ -81,7 +81,7 @@ const loadImages = function (list) {
         } else {
             setTimeout(function () {
                 resolve();
-            }, 0);
+            });
         }
     });
 };
@@ -110,7 +110,7 @@ const initEvents = function () {
             key = { isUp: true, isDown: false };
             keyboard[event.code] = key;
         }
-        if (key.isUp && currentState.onKeyPress) {
+        if (key.isUp && currentState && typeof currentState.onKeyPress === "function") {
             currentState.onKeyPress(event.code);
         }
         key.isDown = true;
@@ -119,11 +119,24 @@ const initEvents = function () {
     window.addEventListener("keyup", (event) => {
         let key = keyboard[event.code];
         if (key) {
-            if (key.isDown && currentState.onKeyRelease) {
+            if (key.isDown && currentState && typeof currentState.onKeyRelease === "function") {
                 currentState.onKeyRelease(event.code)
             }
             key.isDown = false;
             key.isUp = true;
+        }
+    });
+    window.addEventListener("resize", () => {
+        if (configuration.handlers && typeof configuration.handlers.onResizeHandler === "function") {
+            configuration.handlers.onResizeHandler();
+        }
+        if(currentState && typeof currentState.onResize === "function") {
+            currentState.onResize();
+        }
+    });
+    window.addEventListener("orientationchange", () => {
+        if (configuration.handlers && typeof configuration.handlers.onOrientationChangeHandler === "function") {
+            configuration.handlers.onOrientationChangeHandler();
         }
     });
 };
@@ -138,22 +151,24 @@ Fwk.defineApplication = function (config) {
         Fwk.moveToState("loading").then(() => {
             initEvents();
             loadJavascripts(configuration.resources.javascripts).then(() => {
-                if (configuration.handlers && configuration.handlers.onJavascriptsLoaded) {
-                    configuration.handlers.onJavascriptsLoaded(PIXI, pixi.view);
+                if (configuration.handlers && typeof configuration.handlers.onJavascriptsLoadedHandler === "function") {
+                    configuration.handlers.onJavascriptsLoadedHandler(PIXI, pixi.view);
                 }
                 pixi.ticker.add((delta) => {
-                    if (configuration.handlers && configuration.handlers.onTick) {
-                        configuration.handlers.onTick(delta);
+                    if (configuration.handlers && typeof configuration.handlers.onTickHandler === "function") {
+                        configuration.handlers.onTickHandler(delta);
                     }
-                    currentState.onTick(delta);
+                    if (currentState && typeof currentState.onTick === "function") {
+                        currentState.onTick(delta);
+                    }
                 });
                 loadSounds(configuration.resources.sounds).then(() => {
-                    if (configuration.handlers && configuration.handlers.onSoundsLoaded) {
-                        configuration.handlers.onSoundsLoaded();
+                    if (configuration.handlers && typeof configuration.handlers.onSoundsLoadedHandler === "function") {
+                        configuration.handlers.onSoundsLoadedHandler();
                     }
                     loadImages(configuration.resources.images).then(() => {
-                        if (configuration.handlers && configuration.handlers.onImagesLoaded) {
-                            configuration.handlers.onImagesLoaded();
+                        if (configuration.handlers && configuration.handlers.onImagesLoadedHandler === "function") {
+                            configuration.handlers.onImagesLoadedHandler();
                         }
                         Fwk.moveToState(configuration.defaultState.name, configuration.defaultState.params);
                     });
@@ -202,7 +217,7 @@ Fwk.askDeviceOrientationEventPermission = function () {
                 if (permissionState === "granted") {
                     if (!deviceOrientationEventInitialized) {
                         window.addEventListener("deviceorientation", (event) => {
-                            if (currentState.onDeviceOrientation) {
+                            if (currentState && typeof currentState.onDeviceOrientation === "function") {
                                 // alpha : rotation autour de l"axe z
                                 const rotateDegrees = event.alpha;
                                 // gamma : de gauche à droite
@@ -233,10 +248,13 @@ Fwk.askDeviceOrientationEventPermission = function () {
         }
     });
 }
-
+Fwk.isProductionMode = function () {
+    const meta = document.getElementById("productionMode");
+    return meta && meta.content == "true";
+}
 Fwk.getLogger = function () {
     return logAppender;
 };
-Fwk.data = {};
+Fwk.userModel = {};
 
 export default Fwk;

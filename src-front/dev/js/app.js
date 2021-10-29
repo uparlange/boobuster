@@ -1,12 +1,21 @@
 import Fwk from "./fwk.js";
 
+let view = null;
+
+const refreshScale = function () {
+    if (view && Fwk.userModel.tink) {
+        Fwk.userModel.tink.scale = scaleToWindow(view);
+    }
+};
+
 Fwk.defineApplication({
     application: {
         width: 512,
         height: 512,
         antialias: true,
         transparent: false,
-        resolution: 1
+        resolution: 1,
+        needDeviceOrientation: true
     },
     resources: {
         images: [
@@ -25,61 +34,61 @@ Fwk.defineApplication({
         params: null
     },
     handlers: {
-        onResourcesLoaded: function (event) {
-            Fwk.data.loadingSteps = event.total;
-            if (Fwk.data.loadingStep == undefined) {
-                Fwk.data.loadingStep = -1;
+        onResourcesLoadedHandler: function (event) {
+            Fwk.userModel.loadingSteps = event.total;
+            if (Fwk.userModel.loadingStep == undefined) {
+                Fwk.userModel.loadingStep = -1;
             }
-            Fwk.data.loadingStep += event.count;
+            Fwk.userModel.loadingStep += event.count;
         },
-        onJavascriptsLoaded: function (PIXI, view) {
-            let scale = scaleToWindow(view); /* global scaleToWindow */
-            window.addEventListener("resize", () => {
-                scale = scaleToWindow(view);
-                Fwk.data.tink.scale = scale;
-            });
-            window.addEventListener("orientationchange", () => {
-                scale = scaleToWindow(view);
-                Fwk.data.tink.scale = scale;
-            });
-            Fwk.data.bump = new Bump(PIXI); /* global Bump */
-            Fwk.data.tink = new Tink(PIXI, view, scale); /* global Tink */
-            Fwk.data.gameUtilities = new GameUtilities(); /* global GameUtilities */
+        onJavascriptsLoadedHandler: function (p, v) {
+            view = v;
+            Fwk.userModel.bump = new Bump(p); 
+            Fwk.userModel.tink = new Tink(p, v, scaleToWindow(v)); 
+            Fwk.userModel.gameUtilities = new GameUtilities(); 
         },
-        onSoundsLoaded: function () {
+        onResizeHandler: function () {
+            refreshScale();
+        },
+        onOrientationChangeHandler: function () {
+            refreshScale();
+        },
+        onSoundsLoadedHandler: function () {
 
         },
-        onImagesLoaded: function () {
+        onImagesLoadedHandler: function () {
 
         },
-        onTick: function () {
-            Fwk.data.tink.update();
+        onTickHandler: function () {
+            Fwk.userModel.tink.update();
         }
     }
 });
 
-// https://github.com/GoogleChromeLabs/sw-precache/blob/master/demo/app/js/service-worker-registration.js
-window.addEventListener("load", function () {
-    navigator.serviceWorker.register("/service-worker.js").then(function (reg) {
-        reg.onupdatefound = function () {
-            var installingWorker = reg.installing;
-            installingWorker.onstatechange = function () {
-                switch (installingWorker.state) {
-                    case "installed":
-                        if (navigator.serviceWorker.controller) {
-                            Fwk.getLogger().debug("New or updated content is available");
-                            window.location.reload();
-                        } else {
-                            Fwk.getLogger().debug("Content is now available offline");
-                        }
-                        break;
-                    case "redundant":
-                        Fwk.getLogger().debug("The installing service worker became redundant");
-                        break;
-                }
+if (Fwk.isProductionMode()) {
+    // https://github.com/GoogleChromeLabs/sw-precache/blob/master/demo/app/js/service-worker-registration.js
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/service-worker.js").then(function (reg) {
+            reg.onupdatefound = function () {
+                var installingWorker = reg.installing;
+                installingWorker.onstatechange = function () {
+                    switch (installingWorker.state) {
+                        case "installed":
+                            if (navigator.serviceWorker.controller) {
+                                Fwk.getLogger().debug("New or updated content is available");
+                                window.location.reload();
+                            } else {
+                                Fwk.getLogger().debug("Content is now available offline");
+                            }
+                            break;
+                        case "redundant":
+                            Fwk.getLogger().debug("The installing service worker became redundant");
+                            break;
+                    }
+                };
             };
-        };
-    }).catch(function (e) {
-        Fwk.getLogger().debug("Error during service worker registration : " + e);
+        }).catch(function (e) {
+            Fwk.getLogger().debug("Error during service worker registration : " + e);
+        });
     });
-});
+}

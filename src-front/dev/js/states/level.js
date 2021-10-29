@@ -5,99 +5,103 @@ import Life from "./../classes/Life.js";
 import Mario from "./../classes/Mario.js";
 import Bullet from "./../classes/Bullet.js";
 
+const DEFAULT_MARIO_LIFE_COUNT = 5;
+
+const music = Fwk.getSound("/snd/beetlejuice.mp3");
+const boos = [];
+const bullets = [];
+const lives = [];
+
+let mario = null;
+let level = null;
+
+const addBullet = function (state) {
+    const bullet = new Bullet();
+    bullet.getSprite().x = mario.getSprite().x + 5;
+    bullet.getSprite().y = mario.getSprite().y;
+    bullet.getSprite().vx = 0;
+    bullet.getSprite().vy = -5;
+    bullets.push(bullet);
+    state.scene.addChild(bullet.getSprite());
+    Fwk.getSound("/snd/fireball.mp3").play();
+};
+
+const removeBullet = function (state, bullet) {
+    state.scene.removeChild(bullet.getSprite());
+    bullets.splice(bullets.indexOf(bullet), 1);
+};
+
 Fwk.defineState("level", {
-    _defaultMarioLifeCount: 5,
-    _mario: null,
-    _boos: [],
-    _bullets: [],
-    _level: null,
-    _lives: [],
-    _music: null,
-    _addBullet: function () {
-        const bullet = new Bullet();
-        bullet.getSprite().x = this._mario.getSprite().x + 5;
-        bullet.getSprite().y = this._mario.getSprite().y;
-        bullet.getSprite().vx = 0;
-        bullet.getSprite().vy = -5;
-        this._bullets.push(bullet);
-        this.state.scene.addChild(bullet.getSprite());
-        Fwk.getSound("/snd/fireball.mp3").play();
-    },
-    _removeBullet: function (bullet) {
-        this.state.scene.removeChild(bullet.getSprite());
-        this._bullets.splice(this._bullets.indexOf(bullet), 1);
-    },
     beforeEnter: function () {
         // music
-        this._music.play();
+        music.play();
         // level
-        this._level.text = "Level : " + this.state.params.level;
+        level.text = "Level : " + this.state.params.level;
         // boos
-        this._boos.forEach(boo => {
+        boos.forEach(boo => {
             this.state.scene.removeChild(boo.getSprite());
         });
-        this._boos = [];
+        boos.length = 0;
         const booCount = this.state.params.level * 5;
         for (let index = 0; index < booCount; index++) {
             const boo = new Boo();
-            boo.getSprite().x = Fwk.data.gameUtilities.randomInt(0, Fwk.applicationWidth - boo.getSprite().height);
-            boo.getSprite().y = Fwk.data.gameUtilities.randomInt(0, Fwk.applicationHeight - 200);
-            boo.getSprite().vx = Fwk.data.gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            boo.getSprite().vy = Fwk.data.gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
-            this._boos.push(boo);
+            boo.getSprite().x = Fwk.userModel.gameUtilities.randomInt(0, Fwk.applicationWidth - boo.getSprite().height);
+            boo.getSprite().y = Fwk.userModel.gameUtilities.randomInt(0, Fwk.applicationHeight - 200);
+            boo.getSprite().vx = Fwk.userModel.gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            boo.getSprite().vy = Fwk.userModel.gameUtilities.randomInt(0, 1) === 0 ? -1 : 1;
+            boos.push(boo);
             this.state.scene.addChild(boo.getSprite());
         }
         // bullets
-        this._bullets.forEach(bullet => {
+        bullets.forEach(bullet => {
             this.state.scene.removeChild(bullet.getSprite());
         });
-        this._bullets = [];
+        bullets.length = 0;
         // mario
-        if (this._mario) {
-            this._mario.lifeCount = this._defaultMarioLifeCount;
-            this._mario.getSprite().x = (Fwk.applicationWidth / 2) - (this._mario.getSprite().width / 2);
+        if (mario) {
+            mario.lifeCount = DEFAULT_MARIO_LIFE_COUNT;
+            mario.getSprite().x = (Fwk.applicationWidth / 2) - (mario.getSprite().width / 2);
         }
         // lives
-        this._lives.forEach(life => {
+        lives.forEach(life => {
             life.getSprite().visible = true;
         });
     },
     setup: function () {
         // music
-        this._music = Fwk.getSound("/snd/beetlejuice.mp3");
-        this._music.loop(true);
+        music.loop(true);
         // background
         const background = new PIXI.Sprite(PIXI.Loader.shared.resources["/img/boobuster.json"].textures["bg_play.png"]);
-        Fwk.data.tink.makeInteractive(background);
+        Fwk.userModel.tink.makeInteractive(background);
         background.release = () => {
-            this._addBullet();
+            addBullet(this.state);
         };
         this.state.scene.addChild(background);
         // level
-        this._level = new PIXI.Text("", new PIXI.TextStyle({
+        level = new PIXI.Text("", new PIXI.TextStyle({
             fontSize: 20,
             fill: "white"
         }));
-        this._level.x = 10;
-        this._level.y = 10;
-        this.state.scene.addChild(this._level);
+        level.x = 10;
+        level.y = 10;
+        this.state.scene.addChild(level);
         // lives
-        for (let index = 1; index <= this._defaultMarioLifeCount; index++) {
+        for (let index = 1; index <= DEFAULT_MARIO_LIFE_COUNT; index++) {
             const life = new Life();
             life.getSprite().x = Fwk.applicationWidth - index * 34;
             life.getSprite().y = 10;
-            this._lives.push(life);
+            lives.push(life);
             this.state.scene.addChild(life.getSprite());
         }
         // mario
-        this._mario = new Mario();
-        this._mario.getSprite().x = (Fwk.applicationWidth / 2) - (this._mario.getSprite().width / 2);
-        this._mario.getSprite().y = Fwk.applicationHeight - this._mario.getSprite().height;
-        this.state.scene.addChild(this._mario.getSprite());
+        mario = new Mario();
+        mario.getSprite().x = (Fwk.applicationWidth / 2) - (mario.getSprite().width / 2);
+        mario.getSprite().y = Fwk.applicationHeight - mario.getSprite().height;
+        this.state.scene.addChild(mario.getSprite());
     },
     onDeviceOrientation: function (event) {
         const value = Math.round(event.leftToRight);
-        const sprite = this._mario.getSprite();
+        const sprite = mario.getSprite();
         if (value < 0) {
             sprite.vx = Math.max(value, -5);
         } else if (value > 0) {
@@ -108,69 +112,69 @@ Fwk.defineState("level", {
     },
     onKeyPress: function (keyCode) {
         switch (keyCode) {
-            case "ArrowLeft": this._mario.getSprite().vx = -5; break;
-            case "ArrowRight": this._mario.getSprite().vx = 5; break;
+            case "ArrowLeft": mario.getSprite().vx = -5; break;
+            case "ArrowRight": mario.getSprite().vx = 5; break;
         }
     },
     onKeyRelease: function (keyCode) {
         switch (keyCode) {
-            case "Space": this._addBullet(); break;
-            case "ArrowLeft": this._mario.getSprite().vx = 0; break;
-            case "ArrowRight": this._mario.getSprite().vx = 0; break;
+            case "Space": addBullet(this.state); break;
+            case "ArrowLeft": mario.getSprite().vx = 0; break;
+            case "ArrowRight": mario.getSprite().vx = 0; break;
         }
     },
     onTick: function () {
         // mario
-        this._mario.move({ x: 0, y: 0, width: Fwk.applicationWidth, height: Fwk.applicationHeight });
+        mario.move({ x: 0, y: 0, width: Fwk.applicationWidth, height: Fwk.applicationHeight });
         // bullets
-        this._bullets.forEach(bullet => {
+        bullets.forEach(bullet => {
             bullet.move();
-            if (Fwk.data.bump.contain(bullet.getSprite(), { x: 0, y: 0, width: Fwk.applicationWidth, height: Fwk.applicationHeight }) !== undefined) {
-                this._removeBullet(bullet);
+            if (Fwk.userModel.bump.contain(bullet.getSprite(), { x: 0, y: 0, width: Fwk.applicationWidth, height: Fwk.applicationHeight }) !== undefined) {
+                removeBullet(this.state, bullet);
             }
         });
         // boos
-        this._boos.forEach(currentBoo => {
+        boos.forEach(currentBoo => {
             // all boos moves even if they are dead
             currentBoo.move({ x: 0, y: 0, width: Fwk.applicationWidth, height: Fwk.applicationHeight });
             // manage collision for leaving boos
             if (!currentBoo.isDead()) {
                 // boo against boo
-                const livingBoos = this._boos.filter(boo => !boo.isDead());
+                const livingBoos = boos.filter(boo => !boo.isDead());
                 livingBoos.forEach(otherBoo => {
                     if (otherBoo != currentBoo) {
-                        if (Fwk.data.bump.hitTestCircle(currentBoo.getSprite(), otherBoo.getSprite())) {
-                            Fwk.data.bump.movingCircleCollision(currentBoo.getSprite(), otherBoo.getSprite());
+                        if (Fwk.userModel.bump.hitTestCircle(currentBoo.getSprite(), otherBoo.getSprite())) {
+                            Fwk.userModel.bump.movingCircleCollision(currentBoo.getSprite(), otherBoo.getSprite());
                         }
                     }
                 });
                 // boo against bullet
-                this._bullets.forEach(bullet => {
-                    if (Fwk.data.bump.hitTestCircle(currentBoo.getSprite(), bullet.getSprite())) {
-                        Fwk.data.bump.movingCircleCollision(currentBoo.getSprite(), bullet.getSprite());
-                        this._removeBullet(bullet);
+                bullets.forEach(bullet => {
+                    if (Fwk.userModel.bump.hitTestCircle(currentBoo.getSprite(), bullet.getSprite())) {
+                        Fwk.userModel.bump.movingCircleCollision(currentBoo.getSprite(), bullet.getSprite());
+                        removeBullet(this.state, bullet);
                         currentBoo.hit();
                     }
                 });
                 // boo against mario
                 if (!currentBoo.isProtecting()) {
-                    if (Fwk.data.bump.hitTestCircle(currentBoo.getSprite(), this._mario.getSprite())) {
-                        this._mario.hit();
-                        this._lives[this._mario.lifeCount].getSprite().visible = false;
+                    if (Fwk.userModel.bump.hitTestCircle(currentBoo.getSprite(), mario.getSprite())) {
+                        mario.hit();
+                        lives[mario.lifeCount].getSprite().visible = false;
                     }
                 }
             }
         });
         // check end
-        const livingBoos = this._boos.filter(boo => !boo.isDead());
+        const livingBoos = boos.filter(boo => !boo.isDead());
         if (livingBoos.length === 0) {
             Fwk.moveToState("level_cleared", { level: this.state.params.level });
-        } else if (this._mario.isDead()) {
+        } else if (mario.isDead()) {
             Fwk.moveToState("game_over");
         }
     },
     beforeLeave: function () {
         // music
-        this._music.stop();
+        music.stop();
     }
 });

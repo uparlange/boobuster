@@ -17,7 +17,7 @@ class Sprite {
         this._sprite.y += this._sprite.vy;
         this._sprite.texture = this._getTexture(this._sprite.vx > 0 ? this._images.right : this._images.left);
         if (constraints) {
-            const collision = Fwk.data.bump.contain(this._sprite, constraints, true);
+            const collision = Fwk.userModel.bump.contain(this._sprite, constraints, true);
             if (collision) {
                 if (collision.has("right")) {
                     this._sprite.texture = this._getTexture(this._images.left);
