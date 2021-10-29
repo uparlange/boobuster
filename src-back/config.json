@@ -18,7 +18,7 @@
         "path": "/js/vendors",
         "vendors": [
             {
-                "folder": "node_modules/pixi.js/dist",
+                "folder": "node_modules/pixi.js/dist/browser",
                 "files": [
                     "pixi.min.js"
                 ]

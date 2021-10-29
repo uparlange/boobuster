@@ -25,7 +25,7 @@ const loadJavascripts = function (list, type) {
             let loadCount = 0;
             list.forEach(function (element) {
                 const script = document.createElement("script");
-                if(type) {
+                if (type) {
                     script.type = type;
                 }
                 script.onload = function () {
@@ -104,22 +104,22 @@ const enableDisableStateScene = function (scene, enabled) {
 };
 const initEvents = function () {
     window.addEventListener("keydown", (event) => {
-        let key = keyboard[event.keyCode];
+        let key = keyboard[event.code];
         if (!key) {
             key = { isUp: true, isDown: false };
-            keyboard[event.keyCode] = key;
+            keyboard[event.code] = key;
         }
         if (key.isUp && currentState.onKeyPress) {
-            currentState.onKeyPress(event.keyCode);
+            currentState.onKeyPress(event.code);
         }
         key.isDown = true;
         key.isUp = false;
     });
     window.addEventListener("keyup", (event) => {
-        let key = keyboard[event.keyCode];
+        let key = keyboard[event.code];
         if (key) {
             if (key.isDown && currentState.onKeyRelease) {
-                currentState.onKeyRelease(event.keyCode)
+                currentState.onKeyRelease(event.code)
             }
             key.isDown = false;
             key.isUp = true;
@@ -127,7 +127,13 @@ const initEvents = function () {
     });
     window.addEventListener("deviceorientation", (event) => {
         if (currentState.onDeviceOrientation) {
-            currentState.onDeviceOrientation(event);
+            // alpha : rotation autour de l'axe z
+            const rotateDegrees = event.alpha;
+            // gamma : de gauche à droite
+            const leftToRight = event.gamma;
+            // bêta : mouvement avant-arrière
+            const frontToBack = event.beta;
+            currentState.onDeviceOrientation(frontToBack, leftToRight, rotateDegrees);
         }
     });
 };

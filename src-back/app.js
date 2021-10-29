@@ -3,6 +3,7 @@ const express = require("express");
 const compression = require("compression");
 const pkg = require("./../package.json");
 
+//const PROD_MODE = true;
 const PROD_MODE = process.env.NODE_ENV === "production";
 const PORT = process.env.PORT || config.expressPort;
 
