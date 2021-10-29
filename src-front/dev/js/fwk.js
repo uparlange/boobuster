@@ -222,7 +222,10 @@ Fwk.askDeviceOrientationEventPermission = function () {
                 setTimeout(() => {
                     resolve();
                 });
-            }).catch(console.error);
+            }).catch((err) => {
+                alert(err);
+                resolve();
+            });
         } else {
             setTimeout(() => {
                 resolve();
