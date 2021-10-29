@@ -8,7 +8,11 @@
     ],
     "globals": {
         "PIXI": true,
-        "Howl": true
+        "Howl": true,
+        "scaleToWindow": true,
+        "Bump": true,
+        "Tink": true,
+        "GameUtilities": true
     },
     "parserOptions": {
         "sourceType": "module"
