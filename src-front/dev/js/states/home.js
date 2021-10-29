@@ -41,7 +41,9 @@ Fwk.defineState("home", {
         play.y = 395;
         Fwk.data.tink.makeInteractive(play);
         play.release = () => {
-            this._playGame();
+            Fwk.askDeviceOrientationEventPermission().then(() => {
+                this._playGame();
+            });
         }
         this.state.scene.addChild(play);
         // boos
@@ -61,7 +63,7 @@ Fwk.defineState("home", {
     },
     onKeyRelease: function (keyCode) {
         switch (keyCode) {
-            case 32: this._playGame(); break; // space
+            case "Space": this._playGame(); break;
         }
     },
     onTick: function () {
@@ -75,4 +77,4 @@ Fwk.defineState("home", {
         // music
         this._music.stop();
     }
-}); 
+});

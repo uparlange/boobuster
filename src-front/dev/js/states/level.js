@@ -108,15 +108,15 @@ Fwk.defineState("level", {
     },
     onKeyPress: function (keyCode) {
         switch (keyCode) {
-            case 37: this._mario.getSprite().vx = -5; break; // left
-            case 39: this._mario.getSprite().vx = 5; break; // right
+            case "ArrowLeft": this._mario.getSprite().vx = -5; break;
+            case "ArrowRight": this._mario.getSprite().vx = 5; break;
         }
     },
     onKeyRelease: function (keyCode) {
         switch (keyCode) {
-            case 32: this._addBullet(); break; // space
-            case 37: this._mario.getSprite().vx = 0; break; // left
-            case 39: this._mario.getSprite().vx = 0; break; // right
+            case "Space": this._addBullet(); break;
+            case "ArrowLeft": this._mario.getSprite().vx = 0; break;
+            case "ArrowRight": this._mario.getSprite().vx = 0; break;
         }
     },
     onTick: function () {

@@ -3,6 +3,7 @@ let states = {};
 let pixi = null;
 let configuration = null;
 let resourcesCount = 0;
+let deviceOrientationEventInitialized = false;
 const sounds = {};
 const logAppender = console;
 const keyboard = {};
@@ -125,31 +126,6 @@ const initEvents = function () {
             key.isUp = true;
         }
     });
-    if (typeof DeviceOrientationEvent.requestPermission === "function") {
-        DeviceOrientationEvent.requestPermission().then(permissionState => {
-            if (permissionState === "granted") {
-                window.addEventListener("deviceorientation", (event) => {
-                    if (currentState.onDeviceOrientation) {
-                        // alpha : rotation autour de l"axe z
-                        const rotateDegrees = event.alpha;
-                        // gamma : de gauche à droite
-                        const leftToRight = event.gamma;
-                        // bêta : mouvement avant-arrière
-                        const frontToBack = event.beta;
-                        currentState.onDeviceOrientation({
-                            frontToBack: frontToBack,
-                            leftToRight: leftToRight,
-                            rotateDegrees: rotateDegrees
-                        });
-                    }
-                });
-            } else {
-                alert("Device Orientation need to be granted !");
-            }
-        }).catch(console.error);
-    } else {
-        // handle regular non iOS 13+ devices
-    }
 };
 Fwk.getSound = function (name) {
     return sounds[name];
@@ -219,6 +195,43 @@ Fwk.moveToState = function (stateName, params) {
         });
     });
 };
+Fwk.askDeviceOrientationEventPermission = function () {
+    return new Promise((resolve) => {
+        if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+            DeviceOrientationEvent.requestPermission().then(permissionState => {
+                if (permissionState === "granted") {
+                    if (!deviceOrientationEventInitialized) {
+                        window.addEventListener("deviceorientation", (event) => {
+                            if (currentState.onDeviceOrientation) {
+                                // alpha : rotation autour de l"axe z
+                                const rotateDegrees = event.alpha;
+                                // gamma : de gauche à droite
+                                const leftToRight = event.gamma;
+                                // bêta : mouvement avant-arrière
+                                const frontToBack = event.beta;
+                                currentState.onDeviceOrientation({
+                                    frontToBack: frontToBack,
+                                    leftToRight: leftToRight,
+                                    rotateDegrees: rotateDegrees
+                                });
+                            }
+                        });
+                        deviceOrientationEventInitialized = true;
+                    }
+                } else {
+                    setTimeout(() => {
+                        resolve();
+                    });
+                }
+            }).catch(console.error);
+        } else {
+            setTimeout(() => {
+                resolve();
+            });
+        }
+    });
+}
+
 Fwk.getLogger = function () {
     return logAppender;
 };

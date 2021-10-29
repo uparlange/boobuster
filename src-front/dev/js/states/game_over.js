@@ -32,7 +32,7 @@ Fwk.defineState("game_over", {
     },
     onKeyRelease: function (keyCode) {
         switch (keyCode) {
-            case 32: this._returnToHome(); break; // space
+            case "Space": this._returnToHome(); break;
         }
     },
     onTick: function () {

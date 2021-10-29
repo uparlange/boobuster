@@ -35,7 +35,7 @@ Fwk.defineState("level_cleared", {
     },
     onKeyRelease: function (keyCode) {
         switch (keyCode) {
-            case 32: this._playNextLevel(); break; // space
+            case "Space": this._playNextLevel(); break;
         }
     },
     onTick: function () {
@@ -45,4 +45,4 @@ Fwk.defineState("level_cleared", {
         // music
         this._music.stop();
     }
-});   
+});
